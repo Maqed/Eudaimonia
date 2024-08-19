@@ -47,14 +47,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <Providers>
-      <html lang="en" className={`${GeistSans.variable}`}>
-        <body>
+    <html lang="en" className={`${GeistSans.variable}`}>
+      <body>
+        <Providers>
           <Navbar />
           {children}
           <Toaster />
-        </body>
-      </html>
-    </Providers>
+        </Providers>
+      </body>
+    </html>
   );
 }
