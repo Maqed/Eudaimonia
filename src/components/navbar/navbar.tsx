@@ -1,28 +1,28 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+// import { Menu } from "lucide-react";
 import NavbarAuth from "./navbar-auth";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+// import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+// import {
+//   Sheet,
+//   SheetContent,
+//   SheetHeader,
+//   SheetTitle,
+//   SheetTrigger,
+// } from "@/components/ui/sheet";
 
 export default function Navbar() {
   return (
     <header className="flex h-16 items-center justify-between bg-background px-4 md:px-10">
       <Link href="/" className="flex items-center gap-2">
-        <Image src="/logo.png" alt="Logo" width={30} height={30} />{" "}
+        <Image src="/logo.png" alt="Logo" width={30} height={30} />
         <h1 className="hidden text-lg font-semibold md:block">Eudaimonia</h1>
       </Link>
       <nav className="flex items-center gap-x-2">
         <NavbarAuth />
         {/* Mobile Nav */}
-        <Sheet>
+        {/* <Sheet>
           <SheetTrigger className="md:hidden">
             <Menu className="h-5 w-5" />
           </SheetTrigger>
@@ -33,7 +33,7 @@ export default function Navbar() {
               </SheetHeader>
             </VisuallyHidden>
           </SheetContent>
-        </Sheet>
+        </Sheet> */}
       </nav>
     </header>
   );
