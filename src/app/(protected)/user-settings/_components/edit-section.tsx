@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { TransitionStartFunction } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Form,
   FormControl,
@@ -25,13 +26,14 @@ type Props = {
 };
 
 function EditAccountSection({ isPending, startTransition }: Props) {
-  const { data: session, update } = useSession();
+  const { data: session, update, status } = useSession();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof userSettingsSchema>>({
     resolver: zodResolver(userSettingsSchema),
     defaultValues: {
       name: session?.user.name,
     },
+    values: session?.user,
   });
   async function onSubmit(values: z.infer<typeof userSettingsSchema>) {
     startTransition(async () => {
@@ -56,11 +58,15 @@ function EditAccountSection({ isPending, startTransition }: Props) {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input
-                    disabled={isPending}
-                    placeholder="John Doe"
-                    {...field}
-                  />
+                  {status === "loading" ? (
+                    <Skeleton className="h-10 w-full" />
+                  ) : (
+                    <Input
+                      disabled={isPending}
+                      placeholder="John Doe"
+                      {...field}
+                    />
+                  )}
                 </FormControl>
                 <FormDescription>
                   Your name is shown to the public
