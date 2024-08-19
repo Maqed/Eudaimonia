@@ -16,7 +16,7 @@ export default function Navbar() {
   return (
     <header className="flex h-16 items-center justify-between bg-background px-4 md:px-10">
       <Link href="/" className="flex items-center gap-2">
-        <Image src="/logo.png" alt="Logo" width={30} height={30} />
+        <Image src="/logo.png" alt="Logo" width={40} height={40} />
         <h1 className="hidden text-lg font-semibold md:block">Eudaimonia</h1>
       </Link>
       <nav className="flex items-center gap-x-2">
