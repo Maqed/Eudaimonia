@@ -1,7 +1,7 @@
 "use client";
 import type { z } from "zod";
 import { useSession } from "next-auth/react";
-import { userSettingsSchema } from "@/schemas/user-settings";
+import { userSettingsSchema } from "@/zod/user-settings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { TransitionStartFunction } from "react";
