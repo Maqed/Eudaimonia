@@ -3,10 +3,14 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/consts/routes";
+import { useSearchParams } from "next/navigation";
 
 function Social() {
+  const searchParams = useSearchParams();
   function handleClick(provider: "google" | "facebook") {
-    return signIn(provider, { callbackUrl: DEFAULT_LOGIN_REDIRECT });
+    return signIn(provider, {
+      callbackUrl: searchParams.get("callbackUrl") ?? DEFAULT_LOGIN_REDIRECT,
+    });
   }
 
   return (
