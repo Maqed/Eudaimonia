@@ -64,6 +64,7 @@ export function CreateOrEditGroup({
         });
         if (!groupId) form.reset();
         router.push("/app");
+        router.refresh();
       }
     });
   };
