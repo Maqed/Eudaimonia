@@ -1,3 +1,7 @@
+import { redirect } from "next/navigation";
+import { getServerAuthSession } from "@/server/auth";
+import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
+import { headers } from "next/headers";
 import {
   Card,
   CardContent,
@@ -36,7 +40,14 @@ type YourGroupsProps = {
   groups: GroupWithParticipants[];
 };
 
-function YourGroups({ groups }: YourGroupsProps) {
+async function YourGroups({ groups }: YourGroupsProps) {
+  const headersList = headers();
+  // read the custom x-url header
+  const header_url = headersList.get("x-pathname");
+  const session = await getServerAuthSession();
+  if (!session) {
+    redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
+  }
   return (
     <>
       <div className="flex items-center justify-between">
@@ -74,21 +85,25 @@ function YourGroups({ groups }: YourGroupsProps) {
                         copyMessage="Copy Share Link"
                         href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
                       />
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/app/edit/${group.id}`}>
-                              Edit Group
-                            </Link>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {group.adminId === session.user.id ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/app/edit/${group.id}`}>
+                                Edit Group
+                              </Link>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   </CardTitle>
                   <Link href={`/group/${group.id}`}>
