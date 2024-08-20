@@ -2,11 +2,11 @@ import { type ReactNode } from "react";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "App",
+  title: "Edit",
 };
 
-function AppLayout({ children }: { children: ReactNode }) {
+function EditLayout({ children }: { children: ReactNode }) {
   return children;
 }
 
-export default AppLayout;
+export default EditLayout;

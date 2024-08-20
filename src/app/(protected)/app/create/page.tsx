@@ -1,5 +1,3 @@
-"use client";
-
 import { CreateOrEditGroup } from "@/components/groups/create-or-edit-group";
 
 function CreateGroupPage() {
