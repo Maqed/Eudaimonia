@@ -65,7 +65,7 @@ model Group {
 
 model GroupMembership {
     id          String   @id @default(cuid())
-    user        User     @relation(fields: [userId], references: [id])
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId      String
     group       Group    @relation(fields: [groupId], references: [id])
     groupId     String
