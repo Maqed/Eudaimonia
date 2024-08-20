@@ -23,8 +23,8 @@ export async function createGroup(values: unknown) {
       name,
       description,
       isPrivate,
-      admins: {
-        connect: [{ id: session.user.id }],
+      admin: {
+        connect: { id: session.user.id },
       },
       participants: {
         create: [

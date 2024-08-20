@@ -22,7 +22,7 @@ import { type Group, type User, type GroupMembership } from "@prisma/client";
 
 type GroupWithParticipants = Group & {
   participants: (GroupMembership & { user: User })[];
-  admins: User[];
+  admin: User;
 };
 
 type YourGroupsProps = {

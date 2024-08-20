@@ -18,7 +18,7 @@ async function AppPage() {
     where: {
       OR: [
         { participants: { some: { userId: session.user.id } } },
-        { admins: { some: { id: session.user.id } } },
+        { adminId: session.user.id },
       ],
     },
     include: {
@@ -26,8 +26,7 @@ async function AppPage() {
         include: { user: true },
         where: { userId: session.user.id },
       },
-
-      admins: true,
+      admin: true,
     },
   });
 

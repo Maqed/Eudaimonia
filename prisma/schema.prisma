@@ -51,7 +51,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     groups        GroupMembership[]
-    adminGroups   Group[]           @relation("GroupAdmins")
+    adminGroups   Group[]           @relation("GroupAdmin")
 }
 
 model Group {
@@ -60,7 +60,8 @@ model Group {
     description  String?
     isPrivate    Boolean           @default(true)
     participants GroupMembership[]
-    admins       User[]            @relation("GroupAdmins")
+    admin        User              @relation("GroupAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+    adminId      String
 }
 
 model GroupMembership {
