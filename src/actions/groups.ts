@@ -3,7 +3,6 @@
 import { createGroupSchema } from "@/zod/groups";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
-import { type Group } from "@prisma/client";
 
 export async function createGroup(values: unknown) {
   const session = await getServerAuthSession();
