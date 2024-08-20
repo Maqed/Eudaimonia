@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,7 +34,7 @@ export function CreateOrEditGroup({
 }: CreateOrEditGroupProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-
+  const router = useRouter();
   const form = useForm<CreateOrEditGroupInput>({
     resolver: zodResolver(createOrEditGroupSchema),
     defaultValues: initialData ?? {
@@ -63,6 +63,7 @@ export function CreateOrEditGroup({
           description: `Group has been ${groupId ? "updated" : "created"} successfully!`,
         });
         if (!groupId) form.reset();
+        router.push("/app");
       }
     });
   };
