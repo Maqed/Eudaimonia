@@ -72,7 +72,7 @@ function YourGroups({ groups }: YourGroupsProps) {
                     <div className="flex items-center gap-2">
                       <CopyToClipboard
                         copyMessage="Copy Share Link"
-                        href={`${process.env.NEXT_PUBLIC_APP_URL}/join/${group.id}`}
+                        href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
                       />
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
