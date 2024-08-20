@@ -27,7 +27,7 @@ async function EditGroupPage({ params }: { params: { groupId: string } }) {
   const initialData = {
     name: group.name,
     description: group.description ?? "",
-    isPrivate: group.isPrivate as boolean,
+    isPrivate: group.isPrivate,
   };
 
   return (
