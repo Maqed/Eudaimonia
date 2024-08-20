@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-import { FrownIcon, MoveRight, Search, Sparkles } from "lucide-react";
+import { MoveRight, Search, Sparkles } from "lucide-react";
 
 import Link from "next/link";
 
