@@ -1,10 +1,9 @@
 "use server";
-
 import { createGroupSchema } from "@/zod/groups";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 
-export async function createGroup(values: unknown) {
+export async function createGroup(values: typeof createGroupSchema) {
   const session = await getServerAuthSession();
   if (!session?.user) {
     return { error: "Not authenticated" };
