@@ -28,7 +28,16 @@ import {
   Sparkles,
   MoreHorizontal,
   Pen,
+  Trash,
+  Earth,
+  Lock,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Link from "next/link";
 import { type Group, type User, type GroupMembership } from "@prisma/client";
 
@@ -76,8 +85,26 @@ async function YourGroups({ groups }: YourGroupsProps) {
                       className="flex items-center gap-x-2 text-primary"
                     >
                       {group.name}
+                      <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            {group.isPrivate ? (
+                              <Badge variant="secondary">
+                                <Lock className="h-4 w-4 text-foreground" />
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary">
+                                <Earth className="h-4 w-4 text-foreground" />
+                              </Badge>
+                            )}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {group.isPrivate ? "Private" : "Public"}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <Badge variant="secondary">
-                        {group.participants.length}{" "}
+                        {group.participants.length}
                         <UsersRound className="ms-1 h-4 w-4" />
                       </Badge>
                     </Link>
