@@ -31,14 +31,13 @@ export default function CopyToClipboard({
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
-            size="icon"
             onClick={copyToClipboard}
-            className="hover:bg-muted/10"
+            className="h-5 w-5 p-0 hover:bg-muted/10"
           >
             {isCopied ? (
-              <Check className="h-5 w-5" />
+              <Check className="h-4 w-4" />
             ) : (
-              <Clipboard className="h-5 w-5" />
+              <Clipboard className="h-4 w-4" />
             )}
             <span className="sr-only">copyMessage</span>
           </Button>

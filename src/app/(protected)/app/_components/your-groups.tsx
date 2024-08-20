@@ -27,6 +27,7 @@ import {
   Search,
   Sparkles,
   MoreHorizontal,
+  Pen,
 } from "lucide-react";
 import Link from "next/link";
 import { type Group, type User, type GroupMembership } from "@prisma/client";
@@ -67,7 +68,7 @@ async function YourGroups({ groups }: YourGroupsProps) {
           groups.map((group) => {
             const userMembership = group.participants[0];
             return (
-              <Card key={group.id} className="w-[300px]">
+              <Card key={group.id} className="w-[400px] self-stretch">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <Link
@@ -88,7 +89,7 @@ async function YourGroups({ groups }: YourGroupsProps) {
                       {group.adminId === session.user.id ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <Button variant="ghost" className="h-6 w-6 p-0">
                               <span className="sr-only">Open menu</span>
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
@@ -96,7 +97,7 @@ async function YourGroups({ groups }: YourGroupsProps) {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
                               <Link href={`/app/edit/${group.id}`}>
-                                Edit Group
+                                <Pen className="me-2 h-4 w-4" /> Edit Group
                               </Link>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -108,7 +109,8 @@ async function YourGroups({ groups }: YourGroupsProps) {
                   </CardTitle>
                   <Link href={`/group/${group.id}`}>
                     <CardDescription className="truncate">
-                      {group.description}
+                      {/* Put an invisibile span to adjust card height even if there's no description */}
+                      {group.description} <span className="invisible">.</span>
                     </CardDescription>
                   </Link>
                 </CardHeader>
