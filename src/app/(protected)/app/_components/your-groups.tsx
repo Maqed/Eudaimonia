@@ -11,11 +11,18 @@ import { Button } from "@/components/ui/button";
 import CopyToClipboard from "@/components/ui/copy-to-clipboard";
 import AvatarCircles from "@/components/magicui/avatar-circles";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   UsersRound,
   FrownIcon,
   MoveRight,
   Search,
   Sparkles,
+  MoreHorizontal,
 } from "lucide-react";
 import Link from "next/link";
 import { type Group, type User, type GroupMembership } from "@prisma/client";
@@ -62,11 +69,26 @@ function YourGroups({ groups }: YourGroupsProps) {
                         <UsersRound className="ms-1 h-4 w-4" />
                       </Badge>
                     </Link>
-                    <div>
+                    <div className="flex items-center gap-2">
                       <CopyToClipboard
                         copyMessage="Copy Share Link"
                         href={`${process.env.NEXT_PUBLIC_APP_URL}/join/${group.id}`}
                       />
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem asChild>
+                            <Link href={`/app/edit/${group.id}`}>
+                              Edit Group
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardTitle>
                   <Link href={`/group/${group.id}`}>

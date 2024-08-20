@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createGroupSchema = z.object({
+export const createOrEditGroupSchema = z.object({
   name: z
     .string()
     .min(1, "Name must be 1 character at least")
@@ -12,4 +12,4 @@ export const createGroupSchema = z.object({
   isPrivate: z.boolean(),
 });
 
-export type CreateGroupInput = z.infer<typeof createGroupSchema>;
+export type CreateOrEditGroupInput = z.infer<typeof createOrEditGroupSchema>;
