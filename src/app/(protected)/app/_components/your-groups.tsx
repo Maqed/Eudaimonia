@@ -1,5 +1,3 @@
-
-
 import { Button } from "@/components/ui/button";
 
 import { FrownIcon, MoveRight, Search, Sparkles } from "lucide-react";
@@ -40,19 +38,15 @@ async function YourGroups({ groups }: YourGroupsProps) {
           })
         ) : (
           <div className="flex flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-md text-center">
-              <FrownIcon className="mx-auto h-12 w-12 text-primary" />
-              <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Uh oh...
-              </h1>
-              <p className="mt-4 text-muted-foreground">
+            <div className="text-center">
+              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Sounds like you don&apos;t have any groups.
-              </p>
-              <div className="mt-6 flex items-center justify-between gap-3">
+              </h1>
+              <div className="mt-6 flex items-center justify-center gap-3">
                 <Button asChild variant="secondary">
                   <Link className="group" href="/app/discover">
                     Discover groups
-                    <Search className="ms-1 h-5 w-5 transition-all group-hover:rotate-12" />
+                    <Search className="ms-1 h-5 w-5 transition-all group-hover:scale-110" />
                   </Link>
                 </Button>
                 <Button asChild>

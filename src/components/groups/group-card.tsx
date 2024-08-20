@@ -47,6 +47,7 @@ import {
   Pen,
   Trash,
   Lock,
+  Flame,
 } from "lucide-react";
 
 type GroupWithParticipants = Group & {
@@ -176,12 +177,10 @@ async function GroupCard({ group }: GroupProps) {
           />
         </CardContent>
         <CardFooter>
-          <p>
-            Your Streak:{" "}
-            <span className="text-primary">
-              {userMembership?.dailyStreak ?? 0}
-            </span>
-          </p>
+          <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
+            <b>{userMembership?.dailyStreak ?? 0}</b>
+            <Flame className="inline h-7 w-7 fill-current" />
+          </div>
         </CardFooter>
       </Link>
     </Card>
