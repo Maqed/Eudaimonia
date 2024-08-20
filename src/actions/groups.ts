@@ -90,3 +90,17 @@ export async function editGroup(
 
   return { success: true, group: updatedGroup };
 }
+
+export async function deleteGroup(groupId: string) {
+  const session = await getServerAuthSession();
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+  await db.group.delete({
+    where: {
+      id: groupId,
+      adminId: session.user.id,
+    },
+  });
+  return { success: true };
+}
