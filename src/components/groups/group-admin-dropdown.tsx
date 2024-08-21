@@ -19,16 +19,9 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MoreHorizontal, Pen, Trash } from "lucide-react";
-import { type Group, type User, type GroupMembership } from "@prisma/client";
-type GroupWithParticipants = Group & {
-  participants: (GroupMembership & { user: User })[];
-  admin: User;
-};
-type Props = {
-  group: GroupWithParticipants;
-};
+import { type GroupCardProps } from "@/components/groups/group-card";
 
-function GroupAdminDropdown({ group }: Props) {
+function GroupAdminDropdown({ group }: { group: GroupCardProps }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

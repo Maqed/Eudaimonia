@@ -3,6 +3,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
 import { type Group, type User, type GroupMembership } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
 import {
@@ -26,16 +27,20 @@ import AvatarCircles from "@/components/magicui/avatar-circles";
 import { UsersRound, Earth, Lock, Flame } from "lucide-react";
 import GroupAdminDropdown from "./group-admin-dropdown";
 
-type GroupWithParticipants = Group & {
-  participants: (GroupMembership & { user: User })[];
+export type GroupCardProps = Group & {
+  participants: (GroupMembership & { user: { image: string | null } })[];
   admin: User;
-};
-
-type GroupProps = {
-  group: GroupWithParticipants;
+  isUserAnAdmin: boolean;
   dailyStreak?: number;
 };
-async function GroupCard({ group, dailyStreak = 0 }: GroupProps) {
+
+async function GroupCard({
+  group,
+  isUserJoined,
+}: {
+  group: GroupCardProps;
+  isUserJoined: boolean;
+}) {
   const headersList = headers();
 
   // read the custom x-url header
@@ -105,10 +110,13 @@ async function GroupCard({ group, dailyStreak = 0 }: GroupProps) {
             numPeople={group.participants.length - 4}
           />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex items-center justify-between">
           <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
-            <b>{dailyStreak}</b>
+            <b>{group.dailyStreak}</b>
             <Flame className="inline h-7 w-7 fill-current" />
+          </div>
+          <div className="flex items-center justify-center gap-1">
+            {!isUserJoined ? <Button>Join Group</Button> : <></>}
           </div>
         </CardFooter>
       </Link>

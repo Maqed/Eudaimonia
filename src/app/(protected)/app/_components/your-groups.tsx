@@ -3,20 +3,10 @@ import { Button } from "@/components/ui/button";
 import { MoveRight, Search, Sparkles } from "lucide-react";
 
 import Link from "next/link";
-
-import { type Group, type User, type GroupMembership } from "@prisma/client";
 import GroupCard from "@/components/groups/group-card";
+import { type GroupCardProps } from "@/components/groups/group-card";
 
-type GroupWithParticipants = Group & {
-  participants: (GroupMembership & { user: User })[];
-  admin: User;
-};
-
-type YourGroupsProps = {
-  groups: GroupWithParticipants[];
-};
-
-async function YourGroups({ groups }: YourGroupsProps) {
+async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
   return (
     <>
       <div className="flex items-center justify-between">
@@ -34,8 +24,9 @@ async function YourGroups({ groups }: YourGroupsProps) {
       <div className="flex flex-wrap items-center justify-center gap-3">
         {groups.length > 0 ? (
           groups.map((group) => {
-            const userMembership = group.participants[0];
-            return <GroupCard key={group.id} group={group} dailyStreak={userMembership?.dailyStreak} />;
+            return (
+              <GroupCard key={group.id} group={group} isUserJoined={true} />
+            );
           })
         ) : (
           <div className="flex flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">

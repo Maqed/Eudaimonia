@@ -14,7 +14,7 @@ async function AppPage() {
     redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
   }
 
-  const userGroups = await db.group.findMany({
+  const yourGroups = await db.group.findMany({
     where: {
       OR: [
         { participants: { some: { userId: session.user.id } } },
@@ -24,15 +24,28 @@ async function AppPage() {
     include: {
       participants: {
         include: { user: true },
-        where: { userId: session.user.id },
       },
       admin: true,
     },
   });
 
+  const yourGroupsFormatted = yourGroups.map((group) => ({
+    ...group,
+    participants: group.participants.map((participant) => ({
+      ...participant,
+      user: {
+        image: participant.user.image,
+      },
+    })),
+    isUserAnAdmin: group.adminId === session.user.id,
+    dailyStreak: group.participants.find(
+      (participant) => participant.userId === session.user.id,
+    )?.dailyStreak,
+  }));
+
   return (
     <main className="container pt-10">
-      <YourGroups groups={userGroups} />
+      <YourGroups groups={yourGroupsFormatted} />
     </main>
   );
 }
