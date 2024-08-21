@@ -33,8 +33,9 @@ type GroupWithParticipants = Group & {
 
 type GroupProps = {
   group: GroupWithParticipants;
+  dailyStreak?: number;
 };
-async function GroupCard({ group }: GroupProps) {
+async function GroupCard({ group, dailyStreak = 0 }: GroupProps) {
   const headersList = headers();
 
   // read the custom x-url header
@@ -44,7 +45,6 @@ async function GroupCard({ group }: GroupProps) {
     redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
   }
 
-  const userMembership = group.participants[0];
   return (
     <Card key={group.id} className="w-[400px] self-stretch">
       <CardHeader>
@@ -82,7 +82,11 @@ async function GroupCard({ group }: GroupProps) {
               copyMessage="Copy Share Link"
               href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
             />
-            {group.adminId === session.user.id ? <GroupAdminDropdown group={group} /> : <></>}
+            {group.adminId === session.user.id ? (
+              <GroupAdminDropdown group={group} />
+            ) : (
+              <></>
+            )}
           </div>
         </CardTitle>
         <Link href={`/group/${group.id}`}>
@@ -103,7 +107,7 @@ async function GroupCard({ group }: GroupProps) {
         </CardContent>
         <CardFooter>
           <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
-            <b>{userMembership?.dailyStreak ?? 0}</b>
+            <b>{dailyStreak}</b>
             <Flame className="inline h-7 w-7 fill-current" />
           </div>
         </CardFooter>

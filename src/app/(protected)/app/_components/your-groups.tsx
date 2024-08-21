@@ -34,7 +34,8 @@ async function YourGroups({ groups }: YourGroupsProps) {
       <div className="flex flex-wrap items-center justify-center gap-3">
         {groups.length > 0 ? (
           groups.map((group) => {
-            return <GroupCard key={group.id} group={group} />;
+            const userMembership = group.participants[0];
+            return <GroupCard key={group.id} group={group} dailyStreak={userMembership?.dailyStreak} />;
           })
         ) : (
           <div className="flex flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
