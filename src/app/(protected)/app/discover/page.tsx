@@ -5,6 +5,7 @@ import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
 import { PaginationWithLinks } from "@/components/ui/paginationWithLinks";
 import GroupCard from "@/components/groups/group-card";
+import { getDiscoverGroups } from "@/actions/groups";
 
 const pageSize = 6;
 
@@ -24,22 +25,11 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
     redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
   }
 
-  const discoverCarouselGroups = await db.group.findMany({
-    where: {
-      AND: [
-        { isPrivate: false },
-        { participants: { none: { userId: session.user.id } } },
-      ],
-    },
-    include: {
-      participants: {
-        include: { user: true },
-      },
-      admin: true,
-    },
-    take: pageSize,
+  const discoverCarouselGroups = await getDiscoverGroups({
+    session, take: pageSize,
     skip: pageSize * (page - 1),
-  });
+  })
+
   const totalNumberOfGroups = await db.group.count({
     where: {
       AND: [
@@ -48,27 +38,12 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
       ],
     },
   });
-  const discoverCarouselGroupsFormatted = discoverCarouselGroups.map(
-    (group) => ({
-      ...group,
-      participants: group.participants.map((participant) => ({
-        ...participant,
-        user: {
-          image: participant.user.image,
-        },
-      })),
-      isUserAnAdmin: group.adminId === session.user.id,
-      dailyStreak: group.participants.find(
-        (participant) => participant.userId === session.user.id,
-      )?.dailyStreak,
-    }),
-  );
 
   return (
     <main className="container mt-10">
       <h1 className="mb-5 text-4xl">Discover Groups</h1>
       <div className="mb-5 flex flex-wrap items-center justify-start gap-3">
-        {discoverCarouselGroupsFormatted.map((group) => {
+        {discoverCarouselGroups.map((group) => {
           return (
             <GroupCard
               key={`discover-${group.id}`}

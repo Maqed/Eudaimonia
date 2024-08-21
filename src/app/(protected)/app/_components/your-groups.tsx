@@ -4,7 +4,7 @@ import { MoveRight, Search, Sparkles } from "lucide-react";
 
 import Link from "next/link";
 import GroupCard from "@/components/groups/group-card";
-import { type GroupCardProps } from "@/components/groups/group-card";
+import { type GroupCardProps } from "@/types/groups";
 import {
   Carousel,
   CarouselContent,

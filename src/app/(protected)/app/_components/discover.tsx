@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MoveRight } from "lucide-react";
 import GroupCard from "@/components/groups/group-card";
-import { type GroupCardProps } from "@/components/groups/group-card";
+import { type GroupCardProps } from "@/types/groups";
 import {
   Carousel,
   CarouselContent,

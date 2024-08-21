@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
-import { type Group, type User, type GroupMembership } from "@prisma/client";
+
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
@@ -27,13 +27,8 @@ import AvatarCircles from "@/components/magicui/avatar-circles";
 import { UsersRound, Earth, Lock, Flame } from "lucide-react";
 import GroupAdminDropdown from "./group-admin-dropdown";
 import GroupMemberDropdown from "./group-member-dropdown";
+import { type GroupCardProps } from "@/types/groups";
 
-export type GroupCardProps = Group & {
-  participants: (GroupMembership & { user: { image: string | null } })[];
-  admin: User;
-  isUserAnAdmin: boolean;
-  dailyStreak?: number;
-};
 
 async function GroupCard({
   group,

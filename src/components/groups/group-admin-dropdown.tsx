@@ -19,7 +19,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MoreHorizontal, Pen, Trash } from "lucide-react";
-import { type GroupCardProps } from "@/components/groups/group-card";
+import { type GroupCardProps } from "@/types/groups";
 
 function GroupAdminDropdown({ group }: { group: GroupCardProps }) {
   return (

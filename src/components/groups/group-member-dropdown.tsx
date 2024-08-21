@@ -18,7 +18,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MoreHorizontal, LogOut } from "lucide-react";
-import { type GroupCardProps } from "@/components/groups/group-card";
+import { type GroupCardProps } from "@/types/groups";
 
 function GroupMemberDropdown({ group }: { group: GroupCardProps }) {
   return (
