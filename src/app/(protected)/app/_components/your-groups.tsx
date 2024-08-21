@@ -5,6 +5,11 @@ import { MoveRight, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
 import GroupCard from "@/components/groups/group-card";
 import { type GroupCardProps } from "@/components/groups/group-card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
   return (
@@ -21,37 +26,39 @@ async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
           </Link>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {groups.length > 0 ? (
-          groups.map((group) => {
-            return (
-              <GroupCard key={group.id} group={group} isUserJoined={true} />
-            );
-          })
-        ) : (
-          <div className="flex flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
-                Sounds like you don&apos;t have any groups.
-              </h1>
-              <div className="mt-6 flex items-center justify-center gap-3">
-                <Button asChild variant="secondary">
-                  <Link className="group" href="/app/discover">
-                    Discover groups
-                    <Search className="ms-1 h-5 w-5 transition-all group-hover:scale-110" />
-                  </Link>
-                </Button>
-                <Button asChild>
-                  <Link className="group" href="/app/create">
-                    Create a group
-                    <Sparkles className="ms-1 h-5 w-5 transition-all group-hover:text-yellow-400 dark:group-hover:text-yellow-600" />
-                  </Link>
-                </Button>
-              </div>
+      {groups.length > 0 ? (
+        <Carousel>
+          <CarouselContent>
+            {groups.map((group) => (
+              <CarouselItem key={`discover-carousel-${group.id}`}>
+                <GroupCard group={group} isUserJoined={false} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      ) : (
+        <div className="flex flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Sounds like you don&apos;t have any groups.
+            </h1>
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <Button asChild variant="secondary">
+                <Link className="group" href="/app/discover">
+                  Discover groups
+                  <Search className="ms-1 h-5 w-5 transition-all group-hover:scale-110" />
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link className="group" href="/app/create">
+                  Create a group
+                  <Sparkles className="ms-1 h-5 w-5 transition-all group-hover:text-yellow-400 dark:group-hover:text-yellow-600" />
+                </Link>
+              </Button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }
