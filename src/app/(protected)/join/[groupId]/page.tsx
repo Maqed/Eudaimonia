@@ -1,5 +1,5 @@
 import { db } from "@/server/db";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -27,7 +27,9 @@ async function JoinGroupPage({ params: { groupId } }: Props) {
   }
 
   const result = await joinGroup(groupId);
-
+  if (result.success) {
+    redirect(`/app/${groupId}`);
+  }
   return (
     <main className="h-screen-without-navbar flex items-center justify-center">
       <Card>

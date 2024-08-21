@@ -125,7 +125,7 @@ export async function joinGroup(groupId: string) {
   );
 
   if (isAlreadyMember) {
-    return { error: "You are already a member of this group" };
+    return { success: true };
   }
 
   await db.groupMembership.create({
