@@ -9,7 +9,7 @@ import { type GroupCardProps } from "@/components/groups/group-card";
 async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Your Groups</h1>
         <div className="flex items-center justify-between gap-3">
           <Link
