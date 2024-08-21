@@ -1,7 +1,6 @@
 import { db } from "@/server/db";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { joinGroup } from "@/actions/groups";
 
@@ -32,24 +31,10 @@ async function JoinGroupPage({ params: { groupId } }: Props) {
   }
   return (
     <main className="h-screen-without-navbar flex items-center justify-center">
-      <Card>
-        <CardHeader>
-          <CardTitle>Joining Group {group.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {result.error ? (
-            <Alert variant="destructive">
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{result.error}</AlertDescription>
-            </Alert>
-          ) : (
-            <Alert variant="success">
-              <AlertTitle>Success</AlertTitle>
-              <AlertDescription>You have joined the group!</AlertDescription>
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
+      <Alert variant="destructive">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{result.error}</AlertDescription>
+      </Alert>
     </main>
   );
 }
