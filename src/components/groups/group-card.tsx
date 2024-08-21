@@ -113,7 +113,7 @@ async function GroupCard({
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
-            <b>{group.dailyStreak}</b>
+            <b>{group.dailyStreak ?? 0}</b>
             <Flame className="inline h-7 w-7 fill-current" />
           </div>
           <div className="flex items-center justify-center gap-1">
