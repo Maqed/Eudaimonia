@@ -104,3 +104,36 @@ export async function deleteGroup(groupId: string) {
   });
   return { success: true };
 }
+
+export async function joinGroup(groupId: string) {
+  const session = await getServerAuthSession();
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
+  const group = await db.group.findUnique({
+    where: { id: groupId },
+    include: { participants: true },
+  });
+
+  if (!group) {
+    return { error: "Group not found" };
+  }
+
+  const isAlreadyMember = group.participants.some(
+    (p) => p.userId === session.user.id,
+  );
+
+  if (isAlreadyMember) {
+    return { error: "You are already a member of this group" };
+  }
+
+  await db.groupMembership.create({
+    data: {
+      user: { connect: { id: session.user.id } },
+      group: { connect: { id: groupId } },
+    },
+  });
+
+  return { success: true };
+}
