@@ -10,6 +10,8 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { Suspense } from "react";
+import CarouselWithCards from "@/components/placeholders/carousel-with-cards";
 
 async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
   return (
@@ -29,11 +31,13 @@ async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
       {groups.length > 0 ? (
         <Carousel>
           <CarouselContent>
-            {groups.map((group) => (
-              <CarouselItem key={`discover-carousel-${group.id}`}>
-                <GroupCard group={group} isUserJoined={true} />
-              </CarouselItem>
-            ))}
+            <Suspense fallback={<CarouselWithCards />}>
+              {groups.map((group) => (
+                <CarouselItem key={`discover-carousel-${group.id}`}>
+                  <GroupCard group={group} isUserJoined={true} />
+                </CarouselItem>
+              ))}
+            </Suspense>
           </CarouselContent>
         </Carousel>
       ) : (

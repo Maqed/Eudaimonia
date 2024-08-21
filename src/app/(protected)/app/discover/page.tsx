@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { PaginationWithLinks } from "@/components/ui/paginationWithLinks";
 import GroupCard from "@/components/groups/group-card";
 import { getDiscoverGroups } from "@/actions/groups";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const pageSize = 6;
 
@@ -43,21 +45,41 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
     <main className="container mt-10">
       <h1 className="mb-5 text-4xl">Discover Groups</h1>
       <div className="mb-5 flex flex-wrap items-center justify-start gap-3">
-        {discoverCarouselGroups.map((group) => {
-          return (
-            <GroupCard
-              key={`discover-${group.id}`}
-              group={group}
-              isUserJoined={false}
-            />
-          );
-        })}
+        <Suspense fallback={<>
+          <Skeleton className="w-[400px] h-[228px]" />
+          <Skeleton className="w-[400px] h-[228px]" />
+          <Skeleton className="w-[400px] h-[228px]" />
+          <Skeleton className="w-[400px] h-[228px]" />
+          <Skeleton className="w-[400px] h-[228px]" />
+          <Skeleton className="w-[400px] h-[228px]" />
+        </>}>
+          {discoverCarouselGroups.map((group) => {
+            return (
+              <GroupCard
+                key={`discover-${group.id}`}
+                group={group}
+                isUserJoined={false}
+              />
+            );
+          })}
+        </Suspense>
       </div>
-      <PaginationWithLinks
-        page={page}
-        pageSize={pageSize}
-        totalCount={totalNumberOfGroups}
-      />
+      <Suspense fallback={
+        <div className="flex justify-center items-center gap-2">
+
+          <Skeleton className="w-10 h-10" />
+          <Skeleton className="w-10 h-10" />
+          <Skeleton className="w-10 h-10" />
+          <Skeleton className="w-10 h-10" />
+          <Skeleton className="w-10 h-10" />
+        </div>
+      }>
+        <PaginationWithLinks
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalNumberOfGroups}
+        />
+      </Suspense>
     </main>
   );
 }
