@@ -31,7 +31,7 @@ async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
           <CarouselContent>
             {groups.map((group) => (
               <CarouselItem key={`discover-carousel-${group.id}`}>
-                <GroupCard group={group} isUserJoined={false} />
+                <GroupCard group={group} isUserJoined={true} />
               </CarouselItem>
             ))}
           </CarouselContent>
