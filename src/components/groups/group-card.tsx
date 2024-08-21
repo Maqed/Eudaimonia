@@ -26,6 +26,7 @@ import AvatarCircles from "@/components/magicui/avatar-circles";
 
 import { UsersRound, Earth, Lock, Flame } from "lucide-react";
 import GroupAdminDropdown from "./group-admin-dropdown";
+import GroupMemberDropdown from "./group-member-dropdown";
 
 export type GroupCardProps = Group & {
   participants: (GroupMembership & { user: { image: string | null } })[];
@@ -90,7 +91,7 @@ async function GroupCard({
             {group.adminId === session.user.id ? (
               <GroupAdminDropdown group={group} />
             ) : (
-              <></>
+              <GroupMemberDropdown group={group} />
             )}
           </div>
         </CardTitle>

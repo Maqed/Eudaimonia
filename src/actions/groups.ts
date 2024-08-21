@@ -137,3 +137,34 @@ export async function joinGroup(groupId: string) {
 
   return { success: true };
 }
+
+export async function leaveGroup(groupId: string) {
+  const session = await getServerAuthSession();
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
+  const group = await db.group.findUnique({
+    where: { id: groupId },
+    include: { participants: true },
+  });
+
+  if (!group) {
+    return { error: "Group not found" };
+  }
+
+  const isMember = group.participants.some((p) => p.userId === session.user.id);
+
+  if (!isMember) {
+    return { success: true };
+  }
+
+  await db.groupMembership.deleteMany({
+    where: {
+      userId: session.user.id,
+      groupId: groupId,
+    },
+  });
+
+  return { success: true };
+}
