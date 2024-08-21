@@ -2,10 +2,10 @@ import { redirect } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
-
-import { Button } from "@/components/ui/button";
-
 import Link from "next/link";
+
+import { type GroupCardProps } from "@/types/groups";
+
 import {
   Card,
   CardContent,
@@ -14,21 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import CopyToClipboard from "@/components/ui/copy-to-clipboard";
 import AvatarCircles from "@/components/magicui/avatar-circles";
 
-import { UsersRound, Earth, Lock, Flame } from "lucide-react";
+import DailyStreak from "./daily-streak";
+import ParticipantsBadge from "./participants-badge";
+import GroupPrivacyBadge from "./privacy-badge";
 import GroupAdminDropdown from "./group-admin-dropdown";
 import GroupMemberDropdown from "./group-member-dropdown";
-import { type GroupCardProps } from "@/types/groups";
-
+import JoinGroupButton from "./join-group-button";
 
 async function GroupCard({
   group,
@@ -38,89 +32,53 @@ async function GroupCard({
   isUserJoined: boolean;
 }) {
   const headersList = headers();
-
-  // read the custom x-url header
   const header_url = headersList.get("x-pathname");
   const session = await getServerAuthSession();
   if (!session) {
     redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
   }
 
+  const isAdmin = isUserJoined && group.adminId === session.user.id;
+  const isMember = isUserJoined && group.adminId !== session.user.id;
+  const groupLink = isUserJoined ? `/group/${group.id}` : `/join/${group.id}`;
+
   return (
     <Card key={group.id} className="w-[400px] self-stretch">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <Link
-            href={isUserJoined ? `/group/${group.id}` : `/join/${group.id}`}
-            className="flex items-center gap-x-2 text-primary"
-          >
+          <Link href={groupLink} className="flex items-center gap-x-2 text-primary">
             {group.name}
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  {group.isPrivate ? (
-                    <Badge variant="secondary">
-                      <Lock className="h-4 w-4 text-foreground" />
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary">
-                      <Earth className="h-4 w-4 text-foreground" />
-                    </Badge>
-                  )}
-                </TooltipTrigger>
-                <TooltipContent>
-                  {group.isPrivate ? "Private" : "Public"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <Badge variant="secondary">
-              {group.participants.length}
-              <UsersRound className="ms-1 h-4 w-4" />
-            </Badge>
+            <GroupPrivacyBadge isPrivate={group.isPrivate} />
+            <ParticipantsBadge count={group.participants.length} />
           </Link>
           <div className="flex items-center gap-2">
             <CopyToClipboard
               copyMessage="Copy Share Link"
               href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
             />
-            {group.adminId === session.user.id ? (
-              <GroupAdminDropdown group={group} />
-            ) : (
-              <GroupMemberDropdown group={group} />
-            )}
+            {isAdmin && <GroupAdminDropdown group={group} />}
+            {isMember && <GroupMemberDropdown group={group} />}
           </div>
         </CardTitle>
-        <Link href={isUserJoined ? `/group/${group.id}` : `/join/${group.id}`}>
+        <Link href={groupLink}>
           <CardDescription className="truncate">
-            {/* Put an invisibile span to adjust card height even if there's no description */}
             {group.description} <span className="invisible">.</span>
           </CardDescription>
         </Link>
       </CardHeader>
-      <Link href={isUserJoined ? `/group/${group.id}` : `/join/${group.id}`}>
+      <Link href={groupLink}>
         <CardContent>
           <AvatarCircles
-            avatarUrls={group.participants
-              .slice(0, 4)
-              .map((p) => p.user.image ?? "")}
+            avatarUrls={group.participants.slice(0, 4).map((p) => p.user.image ?? "")}
             numPeople={group.participants.length - 4}
           />
         </CardContent>
       </Link>
       <CardFooter className="flex items-center justify-between">
-        <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
-          <b>{group.dailyStreak ?? 0}</b>
-          <Flame className="inline h-7 w-7 fill-current" />
-        </div>
-        <div className="flex items-center justify-center gap-1">
-          {!isUserJoined ? (
-            <Link href={`/join/${group.id}`}>
-              <Button>Join Group</Button>
-            </Link>
-          ) : (
-            <></>
-          )}
-        </div>
+        <DailyStreak streak={group.dailyStreak ?? 0} />
+        {!isUserJoined && (
+          <JoinGroupButton groupId={group.id} />
+        )}
       </CardFooter>
     </Card>
   );
