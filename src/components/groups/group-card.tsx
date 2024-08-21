@@ -56,7 +56,7 @@ async function GroupCard({
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <Link
-            href={`/group/${group.id}`}
+            href={isUserJoined ? `/group/${group.id}` : `/join/${group.id}`}
             className="flex items-center gap-x-2 text-primary"
           >
             {group.name}
@@ -95,14 +95,14 @@ async function GroupCard({
             )}
           </div>
         </CardTitle>
-        <Link href={`/group/${group.id}`}>
+        <Link href={isUserJoined ? `/group/${group.id}` : `/join/${group.id}`}>
           <CardDescription className="truncate">
             {/* Put an invisibile span to adjust card height even if there's no description */}
             {group.description} <span className="invisible">.</span>
           </CardDescription>
         </Link>
       </CardHeader>
-      <Link href={`/group/${group.id}`}>
+      <Link href={isUserJoined ? `/group/${group.id}` : `/join/${group.id}`}>
         <CardContent>
           <AvatarCircles
             avatarUrls={group.participants
@@ -111,16 +111,22 @@ async function GroupCard({
             numPeople={group.participants.length - 4}
           />
         </CardContent>
-        <CardFooter className="flex items-center justify-between">
-          <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
-            <b>{group.dailyStreak ?? 0}</b>
-            <Flame className="inline h-7 w-7 fill-current" />
-          </div>
-          <div className="flex items-center justify-center gap-1">
-            {!isUserJoined ? <Button>Join Group</Button> : <></>}
-          </div>
-        </CardFooter>
       </Link>
+      <CardFooter className="flex items-center justify-between">
+        <div className="flex items-center justify-center gap-1 text-lg text-orange-600">
+          <b>{group.dailyStreak ?? 0}</b>
+          <Flame className="inline h-7 w-7 fill-current" />
+        </div>
+        <div className="flex items-center justify-center gap-1">
+          {!isUserJoined ? (
+            <Link href={`/join/${group.id}`}>
+              <Button>Join Group</Button>
+            </Link>
+          ) : (
+            <></>
+          )}
+        </div>
+      </CardFooter>
     </Card>
   );
 }
