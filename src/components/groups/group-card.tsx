@@ -40,7 +40,7 @@ async function GroupCard({
 
   const isAdmin = isUserJoined && group.adminId === session.user.id;
   const isMember = isUserJoined && group.adminId !== session.user.id;
-  const groupLink = isUserJoined ? `/group/${group.id}` : `/join/${group.id}`;
+  const groupLink = isUserJoined ? `/app/${group.id}` : `/join/${group.id}`;
 
   return (
     <Card key={group.id} className="w-[400px] self-stretch">
