@@ -6,6 +6,8 @@ import Link from "next/link";
 
 import { type GroupCardProps } from "@/types/groups";
 
+import { getDailyStreak } from "@/actions/groups";
+
 import {
   Card,
   CardContent,
@@ -75,7 +77,7 @@ async function GroupCard({
         </CardContent>
       </Link>
       <CardFooter className="flex items-center justify-between">
-        <DailyStreak streak={group.dailyStreak ?? 0} />
+        <DailyStreak streak={(await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0} />
         {!isUserJoined && (
           <JoinGroupButton groupId={group.id} />
         )}

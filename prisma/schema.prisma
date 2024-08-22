@@ -65,14 +65,13 @@ model Group {
 }
 
 model GroupMembership {
-    id          String   @id @default(cuid())
-    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String
-    group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-    groupId     String
-    joinedAt    DateTime @default(now())
-    dailyStreak Int      @default(0)
-    lastActive  DateTime @default(now())
+    id               String     @id @default(cuid())
+    user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId           String
+    group            Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    groupId          String
+    joinedAt         DateTime   @default(now())
+    habitCompletedAt DateTime[]
 
     @@unique([userId, groupId])
 }

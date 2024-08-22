@@ -3,5 +3,4 @@ export type GroupCardProps = Group & {
     participants: (GroupMembership & { user: { image: string | null } })[];
     admin: User;
     isUserAnAdmin: boolean;
-    dailyStreak?: number;
 };

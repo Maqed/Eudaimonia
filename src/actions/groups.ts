@@ -6,6 +6,7 @@ import { db } from "@/server/db";
 import { type Group, type User, type GroupMembership } from "@prisma/client";
 import { type Session } from "next-auth";
 import { type GroupCardProps } from '@/types/groups'
+import { differenceInDays, isToday } from 'date-fns';
 
 export async function createGroup(
   values: z.infer<typeof createOrEditGroupSchema>,
@@ -187,9 +188,6 @@ function _formatToGroupCard(groups: groupsType[], session: Session): GroupCardPr
       },
     })),
     isUserAnAdmin: group.adminId === session?.user.id,
-    dailyStreak: group.participants.find(
-      (participant) => participant.userId === session?.user.id,
-    )?.dailyStreak,
   }));
 }
 
@@ -231,4 +229,86 @@ export async function getDiscoverGroups({
     skip
   });
   return _formatToGroupCard(discoverCarouselGroups, session)
+}
+
+export async function getDailyStreak(userId: string, groupId: string) {
+  const membership = await db.groupMembership.findUnique({
+    where: {
+      userId_groupId: {
+        userId,
+        groupId,
+      },
+    },
+    select: {
+      habitCompletedAt: true,
+    },
+  });
+
+  if (!membership) {
+    return { error: "Membership not found" };
+  }
+  if (membership.habitCompletedAt.length === 0) {
+    return { success: true, dailyStreak: 0 };
+  }
+
+  const lastCompletedDate = membership.habitCompletedAt[membership.habitCompletedAt.length - 1];
+
+  if (!lastCompletedDate || (!isToday(lastCompletedDate) && differenceInDays(new Date(), lastCompletedDate) !== 1)) {
+    return { success: true, dailyStreak: 0 };
+  }
+
+  if ((isToday(lastCompletedDate) || differenceInDays(new Date(), lastCompletedDate) === 1) && membership.habitCompletedAt.length === 1) {
+    return { success: true, dailyStreak: 1 };
+  }
+  let streak = 1;
+  for (let i = membership.habitCompletedAt.length - 1; i >= 0; i--) {
+    const diff = differenceInDays(membership.habitCompletedAt[i]!, membership.habitCompletedAt[i - 1]!); // Use non-null assertion (!)
+    if (diff === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return { success: true, dailyStreak: streak };
+}
+
+export async function completeHabit(userId: string, groupId: string) {
+  const membership = await db.groupMembership.findUnique({
+    where: {
+      userId_groupId: {
+        userId,
+        groupId,
+      },
+    },
+    select: {
+      habitCompletedAt: true,
+    },
+  });
+
+  if (!membership) {
+    return { error: "Membership not found" };
+  }
+
+  const lastCompletedDate = membership.habitCompletedAt[membership.habitCompletedAt.length - 1]
+
+  if (lastCompletedDate && isToday(lastCompletedDate)) {
+    return { error: "Habit already completed today" };
+  }
+
+  const updatedMembership = await db.groupMembership.update({
+    where: {
+      userId_groupId: {
+        userId,
+        groupId,
+      },
+    },
+    data: {
+      habitCompletedAt: {
+        push: new Date(),
+      }
+    },
+  });
+
+  return { success: true, membership: updatedMembership };
 }

@@ -4,6 +4,10 @@ import { getServerAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { isToday } from "date-fns";
+
+import { getDailyStreak, completeHabit } from "@/actions/groups";
 
 import { getFirstLettersOfWords } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -25,6 +29,7 @@ import GroupPrivacyBadge from "@/components/groups/privacy-badge";
 import GroupAdminDropdown from "@/components/groups/group-admin-dropdown";
 import GroupMemberDropdown from "@/components/groups/group-member-dropdown";
 import JoinGroupButton from "@/components/groups/join-group-button";
+import { Button } from "@/components/ui/button";
 
 
 async function GroupPage({ params: { groupId } }: { params: { groupId: string } }) {
@@ -43,9 +48,19 @@ async function GroupPage({ params: { groupId } }: { params: { groupId: string } 
     if (!group) {
         notFound();
     }
+    // Add dailyStreak to each participant
+    const groupWithParticipantsWithDailyStreak = {
+        ...group,
+        participants: await Promise.all(group.participants.map(async participant => ({
+            ...participant,
+            dailyStreak: (await getDailyStreak(participant.userId, group.id)).dailyStreak ?? 0
+        })))
+    }
+
     const sessionParticipant = group.participants.find((participant) => participant.userId === session.user.id)
     const isMember = sessionParticipant && group.adminId !== session.user.id;
     const isAdmin = sessionParticipant && group.adminId === session.user.id;
+    const isHabitCompleted = sessionParticipant && isToday(sessionParticipant.habitCompletedAt[sessionParticipant.habitCompletedAt.length - 1]!)
     return (
         <main className="container mt-10">
             <div className="flex items-center justify-between">
@@ -55,7 +70,7 @@ async function GroupPage({ params: { groupId } }: { params: { groupId: string } 
                     <ParticipantsBadge count={group.participants.length} />
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                    <DailyStreak streak={sessionParticipant?.dailyStreak ?? 0} />
+                    <DailyStreak streak={(await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0} />
                     <CopyToClipboard
                         copyMessage="Copy Share Link"
                         href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
@@ -65,6 +80,17 @@ async function GroupPage({ params: { groupId } }: { params: { groupId: string } 
                     {isAdmin && <GroupAdminDropdown groupId={group.id} />}
                 </div>
             </div>
+            {sessionParticipant && <form
+                action={async () => {
+                    "use server";
+                    await completeHabit(session.user.id, group.id);
+                    revalidatePath(`/app/${group.id}`);
+                    redirect(`/app/${group.id}`);
+                }}
+            >
+
+                <Button type="submit" disabled={isHabitCompleted} className="my-3 w-full">{isHabitCompleted ? 'Habit is completed today!' : 'Complete Habit!'}</Button>
+            </form>}
             <h2 className="text-3xl font-bold">Leaderboards</h2>
             <Table>
                 <TableHeader>
@@ -75,7 +101,7 @@ async function GroupPage({ params: { groupId } }: { params: { groupId: string } 
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {group.participants
+                    {groupWithParticipantsWithDailyStreak.participants
                         .sort((a, b) => b.dailyStreak - a.dailyStreak)
                         .map((member, index) => {
                             const rank = index + 1
