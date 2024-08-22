@@ -56,8 +56,8 @@ async function GroupCard({
               copyMessage="Copy Share Link"
               href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
             />
-            {isAdmin && <GroupAdminDropdown group={group} />}
-            {isMember && <GroupMemberDropdown group={group} />}
+            {isAdmin && <GroupAdminDropdown groupId={group.id} />}
+            {isMember && <GroupMemberDropdown groupId={group.id} />}
           </div>
         </CardTitle>
         <Link href={groupLink}>

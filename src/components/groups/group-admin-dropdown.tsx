@@ -19,9 +19,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MoreHorizontal, Pen, Trash } from "lucide-react";
-import { type GroupCardProps } from "@/types/groups";
 
-function GroupAdminDropdown({ group }: { group: GroupCardProps }) {
+function GroupAdminDropdown({ groupId }: { groupId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,7 +31,7 @@ function GroupAdminDropdown({ group }: { group: GroupCardProps }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href={`/app/edit/${group.id}`}>
+          <Link href={`/app/edit/${groupId}`}>
             <Pen className="me-2 h-4 w-4" /> Edit Group
           </Link>
         </DropdownMenuItem>
@@ -56,7 +55,7 @@ function GroupAdminDropdown({ group }: { group: GroupCardProps }) {
                 <form
                   action={async () => {
                     "use server";
-                    await deleteGroup(group.id);
+                    await deleteGroup(groupId);
                     revalidatePath("/app");
                   }}
                 >

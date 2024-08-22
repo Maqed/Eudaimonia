@@ -18,9 +18,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { MoreHorizontal, LogOut } from "lucide-react";
-import { type GroupCardProps } from "@/types/groups";
 
-function GroupMemberDropdown({ group }: { group: GroupCardProps }) {
+function GroupMemberDropdown({ groupId }: { groupId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -50,7 +49,7 @@ function GroupMemberDropdown({ group }: { group: GroupCardProps }) {
                 <form
                   action={async () => {
                     "use server";
-                    await leaveGroup(group.id);
+                    await leaveGroup(groupId);
                     revalidatePath("/app");
                   }}
                 >
