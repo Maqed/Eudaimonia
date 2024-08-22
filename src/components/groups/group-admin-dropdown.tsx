@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { deleteGroup } from "@/actions/groups";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,7 @@ function GroupAdminDropdown({ groupId }: { groupId: string }) {
                     "use server";
                     await deleteGroup(groupId);
                     revalidatePath("/app");
+                    redirect("/app");
                   }}
                 >
                   <Button type="submit" variant="destructive">
