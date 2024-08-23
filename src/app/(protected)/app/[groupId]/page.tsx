@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import CopyToClipboard from "@/components/ui/copy-to-clipboard";
 import { Calendar } from "@/components/ui/calendar";
+import { ConfettiSideCannons } from "@/components/ui/confetti-button-side";
 
 import DailyStreak from "@/components/groups/daily-streak";
 import ParticipantsBadge from "@/components/groups/participants-badge";
@@ -108,13 +109,13 @@ async function GroupPage({
             redirect(`/app/${group.id}`);
           }}
         >
-          <Button
+          <ConfettiSideCannons
             type="submit"
             disabled={isHabitCompleted}
             className="my-3 w-full"
           >
             {isHabitCompleted ? "Habit is completed today!" : "Complete Habit!"}
-          </Button>
+          </ConfettiSideCannons>
         </form>
       )}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
