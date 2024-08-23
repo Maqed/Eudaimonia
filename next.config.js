@@ -5,6 +5,17 @@
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {images: {
+    unoptimized: true,
+    remotePatterns: [
+      {
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        hostname: 'platform-lookaside.fbsbx.com'
+      }
+    ],
+  },};
 
 export default config;
+    

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from 'next/image'
 import { cn } from "@/lib/utils";
 
 interface AvatarCirclesProps {
@@ -18,9 +19,11 @@ const AvatarCircles = ({
     <div className={cn("z-10 flex -space-x-4 rtl:space-x-reverse", className)}>
       {avatarUrls.map((url, index) => (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           key={index}
           className="h-10 w-10 rounded-full border-2 border-white dark:border-gray-800"
+          width={40}
+          height={40}
           src={url}
           alt={`Avatar ${index + 1}`}
         />
