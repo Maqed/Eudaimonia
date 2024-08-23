@@ -15,7 +15,7 @@ import ModeToggle from "@/components/ui/mode-toggle";
 
 export default function Navbar() {
   return (
-    <header className="flex h-16 items-center justify-between bg-background px-4 md:px-10">
+    <header className="container flex h-16 items-center justify-between bg-background">
       <Link href="/" className="flex items-center gap-2">
         <Image src="/logo.png" alt="Logo" width={40} height={40} />
         <h1 className="hidden text-lg font-semibold md:block">Eudaimonia</h1>
