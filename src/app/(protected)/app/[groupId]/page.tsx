@@ -31,7 +31,6 @@ import GroupPrivacyBadge from "@/components/groups/privacy-badge";
 import GroupAdminDropdown from "@/components/groups/group-admin-dropdown";
 import GroupMemberDropdown from "@/components/groups/group-member-dropdown";
 import JoinGroupButton from "@/components/groups/join-group-button";
-import { Button } from "@/components/ui/button";
 
 async function GroupPage({
   params: { groupId },

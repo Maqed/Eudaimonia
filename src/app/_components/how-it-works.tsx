@@ -3,7 +3,7 @@ import RegisterForm from "@/components/auth/register-form";
 import CreateAGroupButton from "@/components/groups/create-a-group-button";
 import GroupCard from "@/components/groups/group-card";
 import DiscoverGroupsButton from "@/components/groups/discover-groups-button";
-import { GroupCardProps } from "@/types/groups";
+import { type GroupCardProps } from "@/types/groups";
 import TrackHabit from "./track-habit";
 
 async function HowItWorks({

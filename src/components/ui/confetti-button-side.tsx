@@ -3,7 +3,7 @@ import confetti from "canvas-confetti";
 
 import { cn } from "@/lib/utils";
 
-import { Button, ButtonProps } from "@/components/ui/button"; // Updated import
+import { Button, type ButtonProps } from "@/components/ui/button"; // Updated import
 import { type ReactNode } from "react";
 
 export function ConfettiSideCannons({
