@@ -154,7 +154,7 @@ async function GroupPage({
         )}
         {/* Chat */}
         {sessionParticipant && (
-          <div className="col-span-3 mb-10 h-64 lg:col-span-2">
+          <div className="col-span-3 mb-10 h-[400px] lg:col-span-2">
             <h2 className="text-3xl font-bold">Chat</h2>
             <Chat
               selectedUser={sessionParticipant}
