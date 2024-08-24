@@ -37,7 +37,7 @@ async function GroupCard({
   const groupLink = isUserJoined ? `/app/${group.id}` : `/join/${group.id}`;
 
   return (
-    <Card key={group.id} className="w-[300px] self-stretch md:w-[400px]">
+    <Card key={group.id} className="w-[290px] self-stretch md:w-[350px]">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <Link

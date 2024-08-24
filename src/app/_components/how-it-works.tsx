@@ -17,9 +17,6 @@ async function HowItWorks({
       content: (
         <div className="flex flex-col md:items-end">
           <div>
-            <p className="mb-8 text-xs font-normal text-neutral-800 dark:text-neutral-200 md:text-sm">
-              Register an account in our website
-            </p>
             <div>
               <RegisterForm />
             </div>
@@ -31,8 +28,8 @@ async function HowItWorks({
       title: "Create or Join a Group",
       content: (
         <div className="flex flex-col md:items-end">
-          <div>
-            <div className="mb-3 mt-6 flex items-center justify-center gap-3">
+          <div className="flex flex-col items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <CreateAGroupButton />
               <DiscoverGroupsButton />
             </div>

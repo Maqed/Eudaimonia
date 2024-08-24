@@ -26,7 +26,7 @@ function CardWrapper({
   showSocial,
 }: CardWrapperProps) {
   return (
-    <Card className="w-[300px] shadow-md md:w-[400px]">
+    <Card className="w-[290px] shadow-md md:w-[350px]">
       <CardHeader>
         <div className="flex w-full flex-col items-center justify-center gap-y-4">
           <h1 className="text-3xl font-semibold">Eudaimonia</h1>
