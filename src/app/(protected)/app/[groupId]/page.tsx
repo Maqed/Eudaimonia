@@ -81,10 +81,14 @@ async function GroupPage({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2 text-primary">
           <h1 className="text-4xl font-bold">{group.name}</h1>
-          <GroupPrivacyBadge isPrivate={group.isPrivate} />
-          <ParticipantsBadge count={group.participants.length} />
+          {/* DESKTOP ONLY  */}
+          <div className="hidden items-center justify-center gap-x-2 md:flex">
+            <GroupPrivacyBadge isPrivate={group.isPrivate} />
+            <ParticipantsBadge count={group.participants.length} />
+          </div>
         </div>
-        <div className="flex items-center justify-center gap-2">
+        {/* DESKTOP ONLY  */}
+        <div className="hidden items-center justify-center gap-2 md:flex">
           <DailyStreak
             streak={
               (await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0
@@ -98,6 +102,23 @@ async function GroupPage({
           {isMember && <GroupMemberDropdown groupId={group.id} />}
           {isAdmin && <GroupAdminDropdown groupId={group.id} />}
         </div>
+      </div>
+      {/* MOBILE ONLY */}
+      <div className="flex items-center justify-end gap-2 md:hidden">
+        <GroupPrivacyBadge isPrivate={group.isPrivate} />
+        <ParticipantsBadge count={group.participants.length} />
+        <DailyStreak
+          streak={
+            (await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0
+          }
+        />
+        <CopyToClipboard
+          copyMessage="Copy Share Link"
+          href={`${process.env.NEXTAUTH_URL}/join/${group.id}`}
+        />
+        {!sessionParticipant && <JoinGroupButton groupId={group.id} />}
+        {isMember && <GroupMemberDropdown groupId={group.id} />}
+        {isAdmin && <GroupAdminDropdown groupId={group.id} />}
       </div>
       {sessionParticipant && (
         <form

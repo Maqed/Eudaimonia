@@ -37,7 +37,7 @@ async function GroupCard({
   const groupLink = isUserJoined ? `/app/${group.id}` : `/join/${group.id}`;
 
   return (
-    <Card key={group.id} className="w-[400px] self-stretch">
+    <Card key={group.id} className="w-[300px] self-stretch md:w-[400px]">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <Link
@@ -45,8 +45,6 @@ async function GroupCard({
             className="flex items-center gap-x-2 text-primary"
           >
             {group.name}
-            <GroupPrivacyBadge isPrivate={group.isPrivate} />
-            <ParticipantsBadge count={group.participants.length} />
           </Link>
           <div className="flex items-center gap-2">
             <CopyToClipboard
@@ -64,7 +62,11 @@ async function GroupCard({
         </Link>
       </CardHeader>
       <Link href={groupLink}>
-        <CardContent>
+        <CardContent className="flex flex-col gap-3">
+          <div className="flex items-center gap-1">
+            <GroupPrivacyBadge isPrivate={group.isPrivate} />
+            <ParticipantsBadge count={group.participants.length} />
+          </div>
           <AvatarCircles
             avatarUrls={group.participants
               .slice(0, 4)
