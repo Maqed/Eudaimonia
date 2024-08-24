@@ -4,10 +4,8 @@ import Providers from "@/providers";
 import { GeistSans } from "geist/font/sans";
 import { Toaster } from "@/components/ui/toaster";
 import { type Metadata } from "next";
-import { env } from "@/env";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(env.NEXTAUTH_URL),
   title: {
     default: "Eudaimonia",
     template: `%s | ${"Eudaimonia"}`,
@@ -19,7 +17,6 @@ export const metadata: Metadata = {
     title: "Eudaimonia",
     description:
       "Eudaimonia is a website that helps you improve your life by tracking your habits with your friends",
-    url: env.NEXTAUTH_URL,
     siteName: "Eudaimonia",
     locale: "es-ES",
     type: "website",
