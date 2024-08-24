@@ -12,7 +12,6 @@ function ClientSideProviders({ children }: Props) {
     <ThemeProvider
       attribute="class"
       defaultTheme="dark"
-      enableSystem
       disableTransitionOnChange
     >
       <SessionProvider>{children}</SessionProvider>
