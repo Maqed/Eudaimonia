@@ -63,6 +63,10 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" },
+        },
         spotlight: {
           "0%": {
             opacity: "0",
@@ -83,6 +87,7 @@ const config = {
         },
       },
       animation: {
+        grid: "grid 15s linear infinite",
         spotlight: "spotlight 2s ease .75s 1 forwards",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

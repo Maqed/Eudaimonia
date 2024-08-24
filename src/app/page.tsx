@@ -8,7 +8,7 @@ export default async function HomePage() {
     redirect("/app");
   }
   return (
-    <main className="container">
+    <main>
       <Hero />
     </main>
   );

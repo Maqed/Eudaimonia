@@ -3,6 +3,7 @@ import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import Link from "next/link";
 import { MoveDown } from "lucide-react";
 
+import RetroGrid from "@/components/magicui/retro-grid";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight";
 import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
@@ -14,7 +15,7 @@ function Hero() {
       className="h-screen-without-navbar relative flex w-full flex-col items-center justify-center gap-3"
     >
       <Spotlight
-        className="absolute left-1/2 top-0 -translate-x-1/2 transform max-lg:hidden md:-top-20"
+        className="absolute left-0 top-0 transform lg:-top-20 lg:left-1/2 lg:-translate-x-1/2"
         fill="white"
       />
       <TextGenerateEffect
@@ -42,6 +43,7 @@ function Hero() {
           <MoveDown />
         </span>
       </div>
+      <RetroGrid />
     </section>
   );
 }
