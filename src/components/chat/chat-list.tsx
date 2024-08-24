@@ -70,10 +70,10 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
                 originY: 0.5,
               }}
               className={cn(
-                "flex flex-row gap-2 whitespace-pre-wrap p-4",
+                "flex gap-2 whitespace-pre-wrap p-4",
                 message.userId === selectedUser.userId
-                  ? "justify-end"
-                  : "justify-start",
+                  ? "flex-row-reverse"
+                  : "flex-row justify-start",
               )}
             >
               <Avatar className="flex items-center justify-center">
