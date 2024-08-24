@@ -29,7 +29,7 @@ async function HowItWorks({
       content: (
         <div className="flex flex-col md:items-end">
           <div className="flex flex-col items-center justify-center gap-3">
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex flex-col items-center justify-center gap-3 md:flex-row">
               <CreateAGroupButton />
               <DiscoverGroupsButton />
             </div>
