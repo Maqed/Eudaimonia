@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-
-import { MoveRight, Search, Sparkles } from "lucide-react";
+import { MoveRight } from "lucide-react";
 
 import Link from "next/link";
 import GroupCard from "@/components/groups/group-card";
@@ -12,6 +10,8 @@ import {
 } from "@/components/ui/carousel";
 import { Suspense } from "react";
 import CarouselWithCards from "@/components/placeholders/carousel-with-cards";
+import CreateAGroupButton from "@/components/groups/create-a-group-button";
+import DiscoverGroupsButton from "@/components/groups/discover-groups-button";
 
 async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
   return (
@@ -47,18 +47,8 @@ async function YourGroups({ groups }: { groups: GroupCardProps[] }) {
               Sounds like you don&apos;t have any groups.
             </h1>
             <div className="mt-6 flex items-center justify-center gap-3">
-              <Button asChild variant="secondary">
-                <Link className="group" href="/app/discover">
-                  Discover groups
-                  <Search className="ms-1 h-5 w-5 transition-all group-hover:scale-110" />
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link className="group" href="/app/create">
-                  Create a group
-                  <Sparkles className="ms-1 h-5 w-5 transition-all group-hover:text-yellow-400 dark:group-hover:text-yellow-600" />
-                </Link>
-              </Button>
+              <DiscoverGroupsButton />
+              <CreateAGroupButton />
             </div>
           </div>
         </div>

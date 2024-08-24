@@ -10,13 +10,15 @@ export function ConfettiSideCannons({
   className,
   children,
   durationInSeconds = 0.75,
+  handleClick,
   ...props
 }: ButtonProps & {
-  className: string;
+  className?: string;
   durationInSeconds?: number;
+  handleClick?: () => void;
   children: ReactNode;
 }) {
-  const handleClick = () => {
+  const _handleClick = () => {
     const end = Date.now() + durationInSeconds * 1000; // 1 second
     const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
 
@@ -47,7 +49,14 @@ export function ConfettiSideCannons({
   };
 
   return (
-    <Button className={cn(className)} {...props} onClick={handleClick}>
+    <Button
+      className={cn(className)}
+      {...props}
+      onClick={() => {
+        _handleClick();
+        handleClick && handleClick();
+      }}
+    >
       {children}
     </Button>
   );

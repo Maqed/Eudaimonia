@@ -34,7 +34,11 @@ function Hero() {
       </div>
       <div
         onClick={() => {
-          scrollBy({ top: window.innerHeight, behavior: "smooth" });
+          // Change scrollBy to scroll to the element with the specified ID
+          const element = document.getElementById("how-it-works");
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
         }}
         className="absolute bottom-5 left-1/2 flex -translate-x-1/2 transform cursor-pointer flex-col items-center justify-center gap-3 text-foreground/60"
       >

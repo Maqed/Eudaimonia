@@ -5,8 +5,8 @@ import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import { type Group, type User, type GroupMembership } from "@prisma/client";
 import { type Session } from "next-auth";
-import { type GroupCardProps } from '@/types/groups'
-import { differenceInDays, isToday } from 'date-fns';
+import { type GroupCardProps } from "@/types/groups";
+import { differenceInDays, isToday } from "date-fns";
 
 export async function createGroup(
   values: z.infer<typeof createOrEditGroupSchema>,
@@ -176,9 +176,12 @@ export async function leaveGroup(groupId: string) {
 type groupsType = Group & {
   participants: (GroupMembership & { user: { image: string | null } })[];
   admin: User;
-}
+};
 
-function _formatToGroupCard(groups: groupsType[], session: Session): GroupCardProps[] {
+function _formatToGroupCard(
+  groups: groupsType[],
+  session: Session | null,
+): GroupCardProps[] {
   return groups.map((group) => ({
     ...group,
     participants: group.participants.map((participant) => ({
@@ -187,7 +190,7 @@ function _formatToGroupCard(groups: groupsType[], session: Session): GroupCardPr
         image: participant.user.image,
       },
     })),
-    isUserAnAdmin: group.adminId === session?.user.id,
+    isUserAnAdmin: session ? group.adminId === session?.user.id : false,
   }));
 }
 
@@ -206,17 +209,25 @@ export async function getYourGroups(session: Session) {
       admin: true,
     },
   });
-  return _formatToGroupCard(yourGroups, session)
+  return _formatToGroupCard(yourGroups, session);
 }
 
 export async function getDiscoverGroups({
-  session, take = Infinity, skip = 0
-}: { session: Session, take?: number, skip?: number }) {
+  session,
+  take = Infinity,
+  skip = 0,
+}: {
+  session: Session | null;
+  take?: number;
+  skip?: number;
+}) {
   const discoverCarouselGroups = await db.group.findMany({
     where: {
       AND: [
         { isPrivate: false },
-        { participants: { none: { userId: session.user.id } } },
+        ...(session
+          ? [{ participants: { none: { userId: session.user.id } } }]
+          : []),
       ],
     },
     include: {
@@ -226,9 +237,9 @@ export async function getDiscoverGroups({
       admin: true,
     },
     take,
-    skip
+    skip,
   });
-  return _formatToGroupCard(discoverCarouselGroups, session)
+  return _formatToGroupCard(discoverCarouselGroups, session);
 }
 
 export async function getDailyStreak(userId: string, groupId: string) {
@@ -251,18 +262,30 @@ export async function getDailyStreak(userId: string, groupId: string) {
     return { success: true, dailyStreak: 0 };
   }
 
-  const lastCompletedDate = membership.habitCompletedAt[membership.habitCompletedAt.length - 1];
+  const lastCompletedDate =
+    membership.habitCompletedAt[membership.habitCompletedAt.length - 1];
 
-  if (!lastCompletedDate || (!isToday(lastCompletedDate) && differenceInDays(new Date(), lastCompletedDate) !== 1)) {
+  if (
+    !lastCompletedDate ||
+    (!isToday(lastCompletedDate) &&
+      differenceInDays(new Date(), lastCompletedDate) !== 1)
+  ) {
     return { success: true, dailyStreak: 0 };
   }
 
-  if ((isToday(lastCompletedDate) || differenceInDays(new Date(), lastCompletedDate) === 1) && membership.habitCompletedAt.length === 1) {
+  if (
+    (isToday(lastCompletedDate) ||
+      differenceInDays(new Date(), lastCompletedDate) === 1) &&
+    membership.habitCompletedAt.length === 1
+  ) {
     return { success: true, dailyStreak: 1 };
   }
   let streak = 1;
   for (let i = membership.habitCompletedAt.length - 1; i >= 0; i--) {
-    const diff = differenceInDays(membership.habitCompletedAt[i]!, membership.habitCompletedAt[i - 1]!); // Use non-null assertion (!)
+    const diff = differenceInDays(
+      membership.habitCompletedAt[i]!,
+      membership.habitCompletedAt[i - 1]!,
+    ); // Use non-null assertion (!)
     if (diff === 1) {
       streak++;
     } else {
@@ -290,7 +313,8 @@ export async function completeHabit(userId: string, groupId: string) {
     return { error: "Membership not found" };
   }
 
-  const lastCompletedDate = membership.habitCompletedAt[membership.habitCompletedAt.length - 1]
+  const lastCompletedDate =
+    membership.habitCompletedAt[membership.habitCompletedAt.length - 1];
 
   if (lastCompletedDate && isToday(lastCompletedDate)) {
     return { error: "Habit already completed today" };
@@ -306,7 +330,7 @@ export async function completeHabit(userId: string, groupId: string) {
     data: {
       habitCompletedAt: {
         push: new Date(),
-      }
+      },
     },
   });
 

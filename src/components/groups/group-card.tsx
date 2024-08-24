@@ -1,7 +1,4 @@
-import { redirect } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
-import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
-import { headers } from "next/headers";
 import Link from "next/link";
 
 import { type GroupCardProps } from "@/types/groups";
@@ -33,22 +30,20 @@ async function GroupCard({
   group: GroupCardProps;
   isUserJoined: boolean;
 }) {
-  const headersList = headers();
-  const header_url = headersList.get("x-pathname");
   const session = await getServerAuthSession();
-  if (!session) {
-    redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
-  }
 
-  const isAdmin = isUserJoined && group.adminId === session.user.id;
-  const isMember = isUserJoined && group.adminId !== session.user.id;
+  const isAdmin = isUserJoined && group.adminId === session?.user.id;
+  const isMember = isUserJoined && group.adminId !== session?.user.id;
   const groupLink = isUserJoined ? `/app/${group.id}` : `/join/${group.id}`;
 
   return (
     <Card key={group.id} className="w-[400px] self-stretch">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <Link href={groupLink} className="flex items-center gap-x-2 text-primary">
+          <Link
+            href={groupLink}
+            className="flex items-center gap-x-2 text-primary"
+          >
             {group.name}
             <GroupPrivacyBadge isPrivate={group.isPrivate} />
             <ParticipantsBadge count={group.participants.length} />
@@ -71,16 +66,22 @@ async function GroupCard({
       <Link href={groupLink}>
         <CardContent>
           <AvatarCircles
-            avatarUrls={group.participants.slice(0, 4).map((p) => p.user.image ?? "")}
+            avatarUrls={group.participants
+              .slice(0, 4)
+              .map((p) => p.user.image ?? "")}
             numPeople={group.participants.length - 4}
           />
         </CardContent>
       </Link>
       <CardFooter className="flex items-center justify-between">
-        <DailyStreak streak={(await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0} />
-        {!isUserJoined && (
-          <JoinGroupButton groupId={group.id} />
+        {session && (
+          <DailyStreak
+            streak={
+              (await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0
+            }
+          />
         )}
+        {!isUserJoined && <JoinGroupButton groupId={group.id} />}
       </CardFooter>
     </Card>
   );
