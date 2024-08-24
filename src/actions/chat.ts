@@ -18,7 +18,7 @@ export async function sendMessage({
   if (!content) {
     return { error: "Invalid content" };
   }
-  const group = db.group.findUnique({
+  const group = await db.group.findUnique({
     where: {
       id: groupId,
     },

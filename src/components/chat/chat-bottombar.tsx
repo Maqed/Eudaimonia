@@ -7,17 +7,12 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 import { EmojiPicker } from "./emoji-picker";
-import { MessageType } from "./chat-list";
 
 interface ChatBottombarProps {
-  sendMessage: (newMessage: MessageType) => void;
   groupId: string;
 }
 
-export default function ChatBottombar({
-  sendMessage,
-  groupId,
-}: ChatBottombarProps) {
+export default function ChatBottombar({ groupId }: ChatBottombarProps) {
   const [message, setMessage] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -27,14 +22,11 @@ export default function ChatBottombar({
 
   const handleSend = async () => {
     if (message.trim()) {
-      const { sentMessage } = await sendMessageAction({
+      await sendMessageAction({
         content: message,
         groupId,
       });
 
-      if (sentMessage) {
-        sendMessage(sentMessage as MessageType);
-      }
       setMessage("");
 
       if (inputRef.current) {

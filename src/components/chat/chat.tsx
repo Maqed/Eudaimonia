@@ -1,7 +1,7 @@
 "use client";
-import { ChatList, selectedUserType } from "./chat-list";
-import React, { useEffect, useRef } from "react";
-import { MessageType } from "./chat-list";
+import { ChatList, type selectedUserType } from "./chat-list";
+import React, { useEffect } from "react";
+import { type MessageType } from "./chat-list";
 import { pusherClient } from "@/pusher/client";
 
 interface ChatProps {
@@ -14,34 +14,23 @@ export function Chat({ messages, selectedUser, groupId }: ChatProps) {
   const [messagesState, setMessages] = React.useState<MessageType[]>(
     messages ?? [],
   );
-  const pusherRef = useRef<any>(null);
 
   useEffect(() => {
     pusherClient.subscribe(groupId);
 
-    pusherRef.current = pusherClient.bind(
-      "incoming-message",
-      (newMessage: MessageType) => {
-        setMessages((prevMessages) => {
-          if (!prevMessages.some((msg) => msg.id === newMessage.id)) {
-            return [...prevMessages, newMessage];
-          }
-          return prevMessages;
-        });
-      },
-    );
+    pusherClient.bind("incoming-message", (newMessage: MessageType) => {
+      setMessages((prevMessages) => {
+        if (!prevMessages.some((msg) => msg.id === newMessage.id)) {
+          return [...prevMessages, newMessage];
+        }
+        return prevMessages;
+      });
+    });
 
     return () => {
       pusherClient.unsubscribe(groupId);
-      if (pusherRef.current) {
-        pusherClient.unbind("incoming-message", pusherRef.current);
-      }
     };
   }, [groupId]);
-
-  const sendMessage = (newMessage: MessageType) => {
-    // Don't add the message here, let Pusher handle it
-  };
 
   return (
     <div className="flex h-full w-full flex-col justify-between">
@@ -49,7 +38,6 @@ export function Chat({ messages, selectedUser, groupId }: ChatProps) {
         groupId={groupId}
         messages={messagesState}
         selectedUser={selectedUser}
-        sendMessage={sendMessage}
       />
     </div>
   );

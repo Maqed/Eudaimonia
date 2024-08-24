@@ -29,17 +29,9 @@ interface ChatListProps {
   messages?: MessageType[];
   selectedUser: selectedUserType;
   groupId: string;
-  sendMessage: (newMessage: MessageType) => void;
 }
 
-export function ChatList({
-  messages,
-  selectedUser,
-  groupId,
-  sendMessage,
-}: ChatListProps) {
-  if (!selectedUser) return <></>;
-
+export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -48,6 +40,8 @@ export function ChatList({
         messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  if (!selectedUser) return <></>;
 
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
@@ -97,7 +91,7 @@ export function ChatList({
           ))}
         </AnimatePresence>
       </div>
-      <ChatBottombar groupId={groupId} sendMessage={sendMessage} />
+      <ChatBottombar groupId={groupId} />
     </div>
   );
 }

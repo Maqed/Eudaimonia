@@ -65,7 +65,7 @@ async function GroupPage({
       })),
     ),
   };
-  let { messages } = await getMessages({ groupId });
+  const { messages } = await getMessages({ groupId });
   const sessionParticipant = group.participants.find(
     (participant) => participant.userId === session.user.id,
   );
