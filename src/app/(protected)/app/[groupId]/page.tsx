@@ -31,6 +31,8 @@ import GroupPrivacyBadge from "@/components/groups/privacy-badge";
 import GroupAdminDropdown from "@/components/groups/group-admin-dropdown";
 import GroupMemberDropdown from "@/components/groups/group-member-dropdown";
 import JoinGroupButton from "@/components/groups/join-group-button";
+import { Chat } from "@/components/chat/chat";
+import { getMessages } from "@/actions/chat";
 
 async function GroupPage({
   params: { groupId },
@@ -63,7 +65,7 @@ async function GroupPage({
       })),
     ),
   };
-
+  let { messages } = await getMessages({ groupId });
   const sessionParticipant = group.participants.find(
     (participant) => participant.userId === session.user.id,
   );
@@ -78,7 +80,7 @@ async function GroupPage({
     );
   return (
     <main className="container mt-10">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between md:mb-5">
         <div className="flex items-center gap-x-2 text-primary">
           <h1 className="text-4xl font-bold">{group.name}</h1>
           {/* DESKTOP ONLY  */}
@@ -104,7 +106,7 @@ async function GroupPage({
         </div>
       </div>
       {/* MOBILE ONLY */}
-      <div className="flex items-center justify-end gap-2 md:hidden">
+      <div className="mb-5 flex items-center justify-end gap-2 md:hidden">
         <GroupPrivacyBadge isPrivate={group.isPrivate} />
         <ParticipantsBadge count={group.participants.length} />
         <DailyStreak
@@ -139,6 +141,7 @@ async function GroupPage({
         </form>
       )}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        {/* Calendar */}
         {sessionParticipant && (
           <div className="place-self-center">
             <h2 className="text-center text-3xl font-bold">Track your habit</h2>
@@ -149,7 +152,19 @@ async function GroupPage({
             />
           </div>
         )}
-        <div className="lg:col-span-2">
+        {/* Chat */}
+        {sessionParticipant && (
+          <div className="col-span-3 mb-10 h-64 lg:col-span-2">
+            <h2 className="text-3xl font-bold">Chat</h2>
+            <Chat
+              selectedUser={sessionParticipant}
+              groupId={group.id}
+              messages={messages}
+            />
+          </div>
+        )}
+        {/* Leaderboards */}
+        <div className="col-span-3">
           <h2 className="text-3xl font-bold">Leaderboards</h2>
           <Table>
             <TableHeader>

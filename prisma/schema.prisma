@@ -52,6 +52,17 @@ model User {
     sessions      Session[]
     groups        GroupMembership[]
     adminGroups   Group[]           @relation("GroupAdmin")
+    messages Message[]
+}
+
+model Message {
+    id        String   @id @default(cuid())
+    content   String
+    createdAt DateTime @default(now())
+    group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    groupId   String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
 }
 
 model Group {
@@ -62,6 +73,8 @@ model Group {
     participants GroupMembership[]
     admin        User              @relation("GroupAdmin", fields: [adminId], references: [id], onDelete: Cascade)
     adminId      String
+
+    messages Message[]
 }
 
 model GroupMembership {
