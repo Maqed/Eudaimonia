@@ -3,6 +3,30 @@ import { db } from "@/server/db";
 import { pusherServer } from "@/pusher/server";
 import { getServerAuthSession } from "@/server/auth";
 
+export async function isUserAuthorizedToSendAMessage(groupId: string) {
+  const session = await getServerAuthSession();
+  if (!session) {
+    return { error: "Not authenticated" };
+  }
+  const membership = await db.groupMembership.findUnique({
+    where: {
+      userId_groupId: {
+        userId: session.user.id,
+        groupId,
+      },
+    },
+  });
+
+  if (!membership) {
+    return { error: "User is not a member of this group" };
+  }
+
+  if (membership.isBanned) {
+    return { error: "User is banned from this group" };
+  }
+  return { success: "User is Authenticated", session };
+}
+
 export async function sendMessage({
   content,
   groupId,
@@ -10,11 +34,10 @@ export async function sendMessage({
   content: string;
   groupId: string;
 }) {
-  const session = await getServerAuthSession();
+  const { success, session, error } =
+    await isUserAuthorizedToSendAMessage(groupId);
+  if (error || !session) return { error };
 
-  if (!session?.user) {
-    return { error: "Not authenticated" };
-  }
   if (!content) {
     return { error: "Invalid content" };
   }
@@ -52,24 +75,9 @@ export async function sendMessage({
 }
 
 export async function getMessages({ groupId }: { groupId: string }) {
-  const session = await getServerAuthSession();
+  const { error } = await isUserAuthorizedToSendAMessage(groupId);
 
-  if (!session?.user) {
-    return { error: "Not authenticated" };
-  }
-
-  const membership = await db.groupMembership.findUnique({
-    where: {
-      userId_groupId: {
-        userId: session.user.id,
-        groupId,
-      },
-    },
-  });
-
-  if (!membership) {
-    return { error: "User is not a member of this group" };
-  }
+  if (error) return { error };
 
   const messages = await db.message.findMany({
     where: {
@@ -77,7 +85,7 @@ export async function getMessages({ groupId }: { groupId: string }) {
     },
     include: { user: true },
     orderBy: {
-      createdAt: "asc", // Sort messages by createdAt field in ascending order
+      createdAt: "asc",
     },
   });
 
@@ -91,12 +99,8 @@ export async function deleteMessage({
   messageId: string;
   groupId: string;
 }) {
-  const session = await getServerAuthSession();
-
-  if (!session?.user) {
-    return { error: "Not authenticated" };
-  }
-
+  const { session, error } = await isUserAuthorizedToSendAMessage(groupId);
+  if (error || !session) return { error };
   const message = await db.message.findUnique({
     where: { id: messageId },
     include: { group: true },
