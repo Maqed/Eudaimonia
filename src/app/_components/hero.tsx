@@ -29,7 +29,7 @@ function Hero() {
       </p>
       <div>
         <Link href={DEFAULT_UNAUTHENTICATED_REDIRECT}>
-          <Button>Track your habits now</Button>
+          <Button>TRACK YOUR HABITS NOW!</Button>
         </Link>
       </div>
       <div

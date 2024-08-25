@@ -9,26 +9,26 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFirstLettersOfWords } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-
+export type ParticipantsWithStreaksType = {
+  dailyStreak: number;
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    emailVerified: Date | null;
+    image: string | null;
+  };
+  id: string;
+  userId: string;
+  groupId: string;
+  joinedAt: Date;
+  habitCompletedAt: Date[];
+  isBanned: boolean;
+}[];
 function Leaderboards({
   participantsWithStreaks,
 }: {
-  participantsWithStreaks: {
-    dailyStreak: number;
-    user: {
-      id: string;
-      name: string | null;
-      email: string | null;
-      emailVerified: Date | null;
-      image: string | null;
-    };
-    id: string;
-    userId: string;
-    groupId: string;
-    joinedAt: Date;
-    habitCompletedAt: Date[];
-    isBanned: boolean;
-  }[];
+  participantsWithStreaks: ParticipantsWithStreaksType;
 }) {
   return (
     <Table>

@@ -43,7 +43,11 @@ async function HowItWorks({
 
     {
       title: "Track Your Habits!",
-      content: <TrackHabit />,
+      content: (
+        <div className="flex flex-col md:items-end">
+          <TrackHabit />
+        </div>
+      ),
     },
   ];
   return (
