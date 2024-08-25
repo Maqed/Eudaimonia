@@ -8,18 +8,7 @@ import { isToday } from "date-fns";
 
 import { getDailyStreak, completeHabit } from "@/actions/groups";
 import { getMessages } from "@/actions/chat";
-import { getFirstLettersOfWords } from "@/lib/utils";
-import { cn } from "@/lib/utils";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import CopyToClipboard from "@/components/ui/copy-to-clipboard";
 import { Calendar } from "@/components/ui/calendar";
 import { ConfettiSideCannons } from "@/components/ui/confetti-button-side";
@@ -31,6 +20,7 @@ import GroupAdminDropdown from "@/components/groups/group-admin-dropdown";
 import GroupMemberDropdown from "@/components/groups/group-member-dropdown";
 import JoinGroupButton from "@/components/groups/join-group-button";
 import { Chat } from "@/components/chat/chat";
+import Leaderboards from "@/components/groups/leaderboards";
 
 async function GroupPage({
   params: { groupId },
@@ -178,45 +168,7 @@ async function GroupPage({
         )}
         <div className="col-span-3">
           <h2 className="text-3xl font-bold">Leaderboards</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>#</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Daily Streak</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {participantsWithStreaks
-                .sort((a, b) => b.dailyStreak - a.dailyStreak)
-                .map((member, index) => {
-                  const rank = index + 1;
-                  const rankColors = cn(
-                    "font-bold",
-                    { "text-[#b59410] dark:text-[#FFD700]": rank === 1 },
-                    { "text-[#6D6C71] dark:text-[#C0C0C0]": rank === 2 },
-                    { "text-[#a05822]": rank === 3 },
-                  );
-                  return (
-                    <TableRow key={`leaderboard-${member.userId}`}>
-                      <TableCell className={rankColors}>{rank}</TableCell>
-                      <TableCell className="flex flex-row items-center justify-start gap-2">
-                        <Avatar>
-                          <AvatarImage src={member.user.image ?? ""} />
-                          <AvatarFallback>
-                            {getFirstLettersOfWords(member.user.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        {member.user.name}
-                      </TableCell>
-                      <TableCell className={rankColors}>
-                        {member.dailyStreak}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
+          <Leaderboards participantsWithStreaks={participantsWithStreaks} />
         </div>
       </div>
     </main>
