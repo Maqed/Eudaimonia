@@ -303,7 +303,7 @@ function AdminDropdownMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <BanUserDropdownItem userId={userId} handleBanUser={handleBanUser} />
+        {/* <BanUserDropdownItem userId={userId} handleBanUser={handleBanUser} /> */}
         <DeleteMessageDialog
           messageId={messageId}
           handleDeleteMessage={handleDeleteMessage}
