@@ -4,7 +4,6 @@ import Providers from "@/providers";
 import { GeistSans } from "geist/font/sans";
 import { Toaster } from "@/components/ui/toaster";
 import { type Metadata } from "next";
-import Footer from "@/components/ui/footer";
 
 export const metadata: Metadata = {
   title: {
@@ -50,7 +49,6 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
-          <Footer />
           <Toaster />
         </Providers>
       </body>
