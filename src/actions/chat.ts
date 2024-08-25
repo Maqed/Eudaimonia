@@ -82,13 +82,29 @@ export async function getMessages({ groupId }: { groupId: string }) {
     where: {
       groupId,
     },
-    include: { user: true },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          groups: {
+            where: { groupId },
+            select: { isBanned: true },
+          },
+        },
+      },
+    },
     orderBy: {
       createdAt: "asc",
     },
   });
 
-  return { success: true, messages };
+  const formattedMessages = messages.map((message) => ({
+    ...message,
+    isBanned: message.user.groups[0]?.isBanned ?? false, // Accessing the isBanned status
+  }));
+  return { success: true, messages: formattedMessages };
 }
 
 export async function deleteMessage({

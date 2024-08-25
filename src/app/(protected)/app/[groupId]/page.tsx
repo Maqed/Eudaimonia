@@ -41,6 +41,7 @@ async function GroupPage({
   const header_url = headersList.get("x-pathname");
   const session = await getServerAuthSession();
 
+  // Check if the session exists
   if (!session) {
     redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
   }
@@ -49,7 +50,7 @@ async function GroupPage({
     where: { id: groupId },
     include: {
       admin: true,
-      participants: { include: { user: true }, where: { isBanned: false } },
+      participants: { include: { user: true } },
     },
   });
 
@@ -60,6 +61,7 @@ async function GroupPage({
   const sessionParticipant = group.participants.find(
     (p) => p.userId === session.user.id,
   );
+
   if (sessionParticipant?.isBanned) {
     return notFound();
   }

@@ -211,6 +211,40 @@ export async function banUser(groupId: string, userId: string) {
   return { success: true };
 }
 
+export async function unBanUser(groupId: string, userId: string) {
+  const session = await getServerAuthSession();
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
+  const group = await db.group.findUnique({
+    where: { id: groupId },
+    include: { admin: true },
+  });
+
+  if (!group) {
+    return { error: "Group not found" };
+  }
+
+  if (group.adminId !== session.user.id) {
+    return { error: "Unauthorized" };
+  }
+
+  await db.groupMembership.update({
+    where: {
+      userId_groupId: {
+        userId: userId,
+        groupId: groupId,
+      },
+    },
+    data: {
+      isBanned: false,
+    },
+  });
+
+  return { success: true };
+}
+
 type groupsType = Group & {
   participants: (GroupMembership & { user: { image: string | null } })[];
   admin: User;

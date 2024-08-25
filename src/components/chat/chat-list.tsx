@@ -27,10 +27,13 @@ import {
 } from "@/components/ui/dialog";
 
 import { deleteMessage } from "@/actions/chat";
-import { banUser } from "@/actions/groups";
+import { banUser, unBanUser } from "@/actions/groups";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
-export type MessageType = Message & { user: User };
+export type MessageType = Message & {
+  user: Partial<User>;
+} & { isBanned: boolean };
 export type selectedUserType =
   | {
       user: {
@@ -83,6 +86,11 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
 
   const handleBanUser = async (userId: string) => {
     await banUser(groupId, userId);
+    setOpenMessageId(null);
+  };
+
+  const handleUnBanUser = async (userId: string) => {
+    await unBanUser(groupId, userId);
     setOpenMessageId(null);
   };
 
@@ -149,11 +157,13 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
                       messageId={message.id}
                       userId={message.userId}
                       handleBanUser={handleBanUser}
+                      handleUnBanUser={handleUnBanUser}
                       handleDeleteMessage={handleDeleteMessage}
                       isOpen={openMessageId === message.id}
                       onOpenChange={(open) =>
                         setOpenMessageId(open ? message.id : null)
                       }
+                      isBanned={message.isBanned}
                     />
                   )}
               </div>
@@ -187,7 +197,7 @@ function DeleteMessageDialog({
         <DialogTrigger className="relative flex cursor-pointer select-none items-center rounded-sm bg-destructive px-2 py-1.5 text-sm text-destructive-foreground outline-none transition-colors">
           <Trash className="me-1" size={16} /> Delete Message
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-h-[400px] overflow-hidden">
           <DialogHeader>
             <DialogTitle>
               Are you sure you want to delete the message
@@ -217,8 +227,10 @@ function BanUserDropdownItem({
   handleBanUser: (userId: string) => Promise<void>;
 }) {
   const { toast } = useToast();
+  const router = useRouter();
   const handleBan = async () => {
     await handleBanUser(userId);
+    router.refresh();
     toast({
       variant: "success",
       title: "User has been banned successfully!",
@@ -228,7 +240,7 @@ function BanUserDropdownItem({
   return (
     <DropdownMenuItem asChild>
       <Dialog>
-        <DialogTrigger className="relative flex w-full cursor-pointer select-none items-center rounded-sm bg-accent px-2 py-1.5 text-sm text-white outline-none transition-colors">
+        <DialogTrigger className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
           <Ban className="me-1" size={16} /> Ban
         </DialogTrigger>
         <DialogContent>
@@ -244,6 +256,50 @@ function BanUserDropdownItem({
             </DialogClose>
             <Button onClick={handleBan} type="submit" className="text-white">
               Ban User <Ban className="ms-1" size={16} />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </DropdownMenuItem>
+  );
+}
+function UnBanUserDropdownItem({
+  userId,
+  handleUnBanUser,
+}: {
+  userId: string;
+  handleUnBanUser: (userId: string) => Promise<void>;
+}) {
+  const { toast } = useToast();
+  const router = useRouter();
+  const handleUnBan = async () => {
+    await handleUnBanUser(userId);
+    router.refresh();
+    toast({
+      variant: "success",
+      title: "User has been unbanned successfully!",
+    });
+  };
+
+  return (
+    <DropdownMenuItem asChild>
+      <Dialog>
+        <DialogTrigger className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+          <Ban className="me-1" size={16} /> Unban
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to unban this user</DialogTitle>
+            <DialogDescription>
+              The user will be unbanned from the group
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex items-center justify-end">
+            <DialogClose asChild>
+              <Button variant="secondary">Close</Button>
+            </DialogClose>
+            <Button onClick={handleUnBan} type="submit" className="text-white">
+              Unban User <Ban className="ms-1" size={16} />
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -283,17 +339,22 @@ function AdminDropdownMenu({
   messageId,
   handleDeleteMessage,
   handleBanUser,
+  handleUnBanUser,
   userId,
   isOpen,
   onOpenChange,
+  isBanned: isBannedInitialValue,
 }: {
   messageId: string;
   handleDeleteMessage: (messageId: string) => Promise<void>;
   handleBanUser: (userId: string) => Promise<void>;
+  handleUnBanUser: (userId: string) => Promise<void>;
   userId: string;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  isBanned: boolean;
 }) {
+  const [isBanned, setIsBanned] = useState(isBannedInitialValue);
   return (
     <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
@@ -303,7 +364,23 @@ function AdminDropdownMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {/* <BanUserDropdownItem userId={userId} handleBanUser={handleBanUser} /> */}
+        {isBanned ? (
+          <UnBanUserDropdownItem
+            userId={userId}
+            handleUnBanUser={async (userId) => {
+              await handleUnBanUser(userId);
+              setIsBanned(false);
+            }}
+          />
+        ) : (
+          <BanUserDropdownItem
+            userId={userId}
+            handleBanUser={async (userId) => {
+              await handleBanUser(userId);
+              setIsBanned(true);
+            }}
+          />
+        )}
         <DeleteMessageDialog
           messageId={messageId}
           handleDeleteMessage={handleDeleteMessage}
