@@ -34,7 +34,7 @@ export async function sendMessage({
   content: string;
   groupId: string;
 }) {
-  const { success, session, error } = await _isUserAuthorized(groupId);
+  const { session, error } = await _isUserAuthorized(groupId);
   if (error ?? !session) return { error };
 
   if (!content) {
