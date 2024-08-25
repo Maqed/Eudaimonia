@@ -148,25 +148,63 @@ export async function leaveGroup(groupId: string) {
     return { error: "Not authenticated" };
   }
 
+  const membership = await db.groupMembership.findUnique({
+    where: {
+      userId_groupId: {
+        userId: session.user.id,
+        groupId: groupId,
+      },
+    },
+  });
+
+  if (!membership) {
+    return { error: "Not a member of this group" };
+  }
+
+  if (membership.isBanned) {
+    return { error: "You are banned from this group" };
+  }
+
+  await db.groupMembership.delete({
+    where: {
+      userId_groupId: {
+        userId: session.user.id,
+        groupId: groupId,
+      },
+    },
+  });
+
+  return { success: true };
+}
+
+export async function banUser(groupId: string, userId: string) {
+  const session = await getServerAuthSession();
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
   const group = await db.group.findUnique({
     where: { id: groupId },
-    include: { participants: true },
+    include: { admin: true },
   });
 
   if (!group) {
     return { error: "Group not found" };
   }
 
-  const isMember = group.participants.some((p) => p.userId === session.user.id);
-
-  if (!isMember) {
-    return { success: true };
+  if (group.adminId !== session.user.id) {
+    return { error: "Unauthorized" };
   }
 
-  await db.groupMembership.deleteMany({
+  await db.groupMembership.update({
     where: {
-      userId: session.user.id,
-      groupId: groupId,
+      userId_groupId: {
+        userId: userId,
+        groupId: groupId,
+      },
+    },
+    data: {
+      isBanned: true,
     },
   });
 
@@ -198,12 +236,15 @@ export async function getYourGroups(session: Session) {
   const yourGroups = await db.group.findMany({
     where: {
       OR: [
-        { participants: { some: { userId: session.user.id } } },
+        {
+          participants: { some: { userId: session.user.id, isBanned: false } },
+        },
         { adminId: session.user.id },
       ],
     },
     include: {
       participants: {
+        where: { isBanned: false },
         include: { user: true },
       },
       admin: true,
@@ -226,12 +267,19 @@ export async function getDiscoverGroups({
       AND: [
         { isPrivate: false },
         ...(session
-          ? [{ participants: { none: { userId: session.user.id } } }]
+          ? [
+              {
+                participants: {
+                  none: { userId: session.user.id, isBanned: true },
+                },
+              },
+            ]
           : []),
       ],
     },
     include: {
       participants: {
+        where: { isBanned: false },
         include: { user: true },
       },
       admin: true,

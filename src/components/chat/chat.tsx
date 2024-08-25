@@ -27,6 +27,15 @@ export function Chat({ messages, selectedUser, groupId }: ChatProps) {
       });
     });
 
+    pusherClient.bind(
+      "message-deleted",
+      ({ messageId }: { messageId: string }) => {
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== messageId),
+        );
+      },
+    );
+
     return () => {
       pusherClient.unsubscribe(groupId);
     };

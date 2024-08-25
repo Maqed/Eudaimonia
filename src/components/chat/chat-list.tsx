@@ -1,28 +1,53 @@
 "use client";
 import { type Message, type User } from "@prisma/client";
 import { cn } from "@/lib/utils";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ChatBottombar from "./chat-bottombar";
 import { AnimatePresence, motion } from "framer-motion";
+import { MoreHorizontal, Trash, Ban } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import { deleteMessage } from "@/actions/chat";
+import { banUser } from "@/actions/groups";
+import { Button } from "@/components/ui/button";
 
 export type MessageType = Message & { user: User };
 export type selectedUserType =
-  | ({
+  | {
       user: {
         id: string;
         name: string | null;
-        email: string | null;
-        emailVerified: Date | null;
         image: string | null;
       };
-    } & {
       id: string;
       userId: string;
       groupId: string;
       joinedAt: Date;
       habitCompletedAt: Date[];
-    })
+      group: {
+        id: string;
+        adminId: string;
+      };
+    }
   | undefined;
 
 interface ChatListProps {
@@ -33,13 +58,33 @@ interface ChatListProps {
 
 export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [openMessageId, setOpenMessageId] = useState<string | null>(null);
 
   React.useEffect(() => {
-    if (messagesContainerRef.current) {
+    if (
+      messagesContainerRef.current &&
+      messagesContainerRef.current.scrollHeight -
+        messagesContainerRef.current.scrollTop <=
+        474
+    ) {
+      console.log(
+        messagesContainerRef.current.scrollHeight -
+          messagesContainerRef.current.scrollTop,
+      );
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const handleDeleteMessage = async (messageId: string) => {
+    await deleteMessage({ messageId, groupId });
+    setOpenMessageId(null);
+  };
+
+  const handleBanUser = async (userId: string) => {
+    await banUser(groupId, userId);
+    setOpenMessageId(null);
+  };
 
   if (!selectedUser) return <></>;
 
@@ -62,7 +107,7 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
                 layout: {
                   type: "spring",
                   bounce: 0.3,
-                  duration: messages.indexOf(message) * 0.05 + 0.2,
+                  duration: messages?.indexOf(message) * 0.05 + 0.2,
                 },
               }}
               style={{
@@ -87,11 +132,183 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
               <span className="max-w-xs rounded-md bg-accent p-3">
                 {message.content}
               </span>
+              <div className="self-center justify-self-center">
+                {selectedUser.user.id === message.userId && (
+                  <SelectedUserDropdownMenu
+                    messageId={message.id}
+                    handleDeleteMessage={handleDeleteMessage}
+                    isOpen={openMessageId === message.id}
+                    onOpenChange={(open) =>
+                      setOpenMessageId(open ? message.id : null)
+                    }
+                  />
+                )}
+                {selectedUser.group.adminId === selectedUser.user.id &&
+                  message.userId !== selectedUser.user.id && (
+                    <AdminDropdownMenu
+                      messageId={message.id}
+                      userId={message.userId}
+                      handleBanUser={handleBanUser}
+                      handleDeleteMessage={handleDeleteMessage}
+                      isOpen={openMessageId === message.id}
+                      onOpenChange={(open) =>
+                        setOpenMessageId(open ? message.id : null)
+                      }
+                    />
+                  )}
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
       <ChatBottombar groupId={groupId} />
     </div>
+  );
+}
+function DeleteMessageDialog({
+  messageId,
+  handleDeleteMessage,
+}: {
+  messageId: string;
+  handleDeleteMessage: (messageId: string) => Promise<void>;
+}) {
+  const { toast } = useToast();
+  const handleDelete = async () => {
+    await handleDeleteMessage(messageId);
+    toast({
+      variant: "success",
+      title: "Message has been deleted successfully!",
+    });
+  };
+
+  return (
+    <DropdownMenuItem asChild>
+      <Dialog>
+        <DialogTrigger className="relative flex cursor-pointer select-none items-center rounded-sm bg-destructive px-2 py-1.5 text-sm text-destructive-foreground outline-none transition-colors">
+          <Trash className="me-1" size={16} /> Delete Message
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Are you sure you want to delete the message
+            </DialogTitle>
+            <DialogDescription>
+              The message will be deleted from our server database
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex items-center justify-end">
+            <DialogClose asChild>
+              <Button variant="secondary">Close</Button>
+            </DialogClose>
+            <Button onClick={handleDelete} type="submit" variant="destructive">
+              Delete Message <Trash className="ms-1" size={16} />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </DropdownMenuItem>
+  );
+}
+function BanUserDropdownItem({
+  userId,
+  handleBanUser,
+}: {
+  userId: string;
+  handleBanUser: (userId: string) => Promise<void>;
+}) {
+  const { toast } = useToast();
+  const handleBan = async () => {
+    await handleBanUser(userId);
+    toast({
+      variant: "success",
+      title: "User has been banned successfully!",
+    });
+  };
+
+  return (
+    <DropdownMenuItem asChild>
+      <Dialog>
+        <DialogTrigger className="relative flex w-full cursor-pointer select-none items-center rounded-sm bg-accent px-2 py-1.5 text-sm text-white outline-none transition-colors">
+          <Ban className="me-1" size={16} /> Ban
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to ban this user</DialogTitle>
+            <DialogDescription>
+              The user will be banned from the group
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex items-center justify-end">
+            <DialogClose asChild>
+              <Button variant="secondary">Close</Button>
+            </DialogClose>
+            <Button onClick={handleBan} type="submit" className="text-white">
+              Ban User <Ban className="ms-1" size={16} />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </DropdownMenuItem>
+  );
+}
+function SelectedUserDropdownMenu({
+  messageId,
+  handleDeleteMessage,
+  isOpen,
+  onOpenChange,
+}: {
+  messageId: string;
+  handleDeleteMessage: (messageId: string) => Promise<void>;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-6 w-6 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DeleteMessageDialog
+          messageId={messageId}
+          handleDeleteMessage={handleDeleteMessage}
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+function AdminDropdownMenu({
+  messageId,
+  handleDeleteMessage,
+  handleBanUser,
+  userId,
+  isOpen,
+  onOpenChange,
+}: {
+  messageId: string;
+  handleDeleteMessage: (messageId: string) => Promise<void>;
+  handleBanUser: (userId: string) => Promise<void>;
+  userId: string;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-6 w-6 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <BanUserDropdownItem userId={userId} handleBanUser={handleBanUser} />
+        <DeleteMessageDialog
+          messageId={messageId}
+          handleDeleteMessage={handleDeleteMessage}
+        />
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

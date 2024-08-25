@@ -1,14 +1,13 @@
 import { db } from "@/server/db";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
-import { redirect } from "next/navigation";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { isToday } from "date-fns";
 
 import { getDailyStreak, completeHabit } from "@/actions/groups";
-
+import { getMessages } from "@/actions/chat";
 import { getFirstLettersOfWords } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -32,7 +31,6 @@ import GroupAdminDropdown from "@/components/groups/group-admin-dropdown";
 import GroupMemberDropdown from "@/components/groups/group-member-dropdown";
 import JoinGroupButton from "@/components/groups/join-group-button";
 import { Chat } from "@/components/chat/chat";
-import { getMessages } from "@/actions/chat";
 
 async function GroupPage({
   params: { groupId },
@@ -40,56 +38,72 @@ async function GroupPage({
   params: { groupId: string };
 }) {
   const headersList = headers();
-  // read the custom x-url header
   const header_url = headersList.get("x-pathname");
   const session = await getServerAuthSession();
+
   if (!session) {
     redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
   }
+
   const group = await db.group.findUnique({
     where: { id: groupId },
-    include: { admin: true, participants: { include: { user: true } } },
+    include: {
+      admin: true,
+      participants: { include: { user: true }, where: { isBanned: false } },
+    },
   });
 
   if (!group) {
-    notFound();
+    return notFound();
   }
-  // Add dailyStreak to each participant
-  const groupWithParticipantsWithDailyStreak = {
-    ...group,
-    participants: await Promise.all(
-      group.participants.map(async (participant) => ({
+
+  const sessionParticipant = group.participants.find(
+    (p) => p.userId === session.user.id,
+  );
+  if (sessionParticipant?.isBanned) {
+    return notFound();
+  }
+
+  const participantsWithStreaks = await Promise.all(
+    group.participants
+      .filter((participant) => !participant.isBanned)
+      .map(async (participant) => ({
         ...participant,
         dailyStreak:
           (await getDailyStreak(participant.userId, group.id)).dailyStreak ?? 0,
       })),
-    ),
-  };
-  const { messages } = await getMessages({ groupId });
-  const sessionParticipant = group.participants.find(
-    (participant) => participant.userId === session.user.id,
   );
+  const { messages } = await getMessages({ groupId });
+
   const isMember = sessionParticipant && group.adminId !== session.user.id;
   const isAdmin = sessionParticipant && group.adminId === session.user.id;
   const isHabitCompleted =
     sessionParticipant &&
-    isToday(
-      sessionParticipant.habitCompletedAt[
-        sessionParticipant.habitCompletedAt.length - 1
-      ]!,
-    );
+    isToday(sessionParticipant.habitCompletedAt.slice(-1)[0]!);
+
+  const selectedUserWithGroup = sessionParticipant
+    ? {
+        ...sessionParticipant,
+        user: {
+          ...session.user,
+        },
+        group: {
+          id: group.id,
+          adminId: group.adminId,
+        },
+      }
+    : undefined;
+
   return (
     <main className="container mt-10">
       <div className="flex items-center justify-between md:mb-5">
         <div className="flex items-center gap-x-2 text-primary">
           <h1 className="text-4xl font-bold">{group.name}</h1>
-          {/* DESKTOP ONLY  */}
           <div className="hidden items-center justify-center gap-x-2 md:flex">
             <GroupPrivacyBadge isPrivate={group.isPrivate} />
             <ParticipantsBadge count={group.participants.length} />
           </div>
         </div>
-        {/* DESKTOP ONLY  */}
         <div className="hidden items-center justify-center gap-2 md:flex">
           <DailyStreak
             streak={
@@ -105,7 +119,6 @@ async function GroupPage({
           {isAdmin && <GroupAdminDropdown groupId={group.id} />}
         </div>
       </div>
-      {/* MOBILE ONLY */}
       <div className="mb-5 flex items-center justify-end gap-2 md:hidden">
         <GroupPrivacyBadge isPrivate={group.isPrivate} />
         <ParticipantsBadge count={group.participants.length} />
@@ -141,7 +154,6 @@ async function GroupPage({
         </form>
       )}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
-        {/* Calendar */}
         {sessionParticipant && (
           <div className="place-self-center">
             <h2 className="text-center text-3xl font-bold">Track your habit</h2>
@@ -152,18 +164,16 @@ async function GroupPage({
             />
           </div>
         )}
-        {/* Chat */}
         {sessionParticipant && (
           <div className="col-span-3 mb-10 h-[400px] lg:col-span-2">
             <h2 className="text-3xl font-bold">Chat</h2>
             <Chat
-              selectedUser={sessionParticipant}
+              selectedUser={selectedUserWithGroup}
               groupId={group.id}
               messages={messages}
             />
           </div>
         )}
-        {/* Leaderboards */}
         <div className="col-span-3">
           <h2 className="text-3xl font-bold">Leaderboards</h2>
           <Table>
@@ -175,7 +185,7 @@ async function GroupPage({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {groupWithParticipantsWithDailyStreak.participants
+              {participantsWithStreaks
                 .sort((a, b) => b.dailyStreak - a.dailyStreak)
                 .map((member, index) => {
                   const rank = index + 1;

@@ -76,7 +76,48 @@ export async function getMessages({ groupId }: { groupId: string }) {
       groupId,
     },
     include: { user: true },
+    orderBy: {
+      createdAt: "asc", // Sort messages by createdAt field in ascending order
+    },
   });
 
   return { success: true, messages };
+}
+
+export async function deleteMessage({
+  messageId,
+  groupId,
+}: {
+  messageId: string;
+  groupId: string;
+}) {
+  const session = await getServerAuthSession();
+
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
+  const message = await db.message.findUnique({
+    where: { id: messageId },
+    include: { group: true },
+  });
+
+  if (!message) {
+    return { error: "Message not found" };
+  }
+
+  if (
+    message.userId !== session.user.id &&
+    message.group.adminId !== session.user.id
+  ) {
+    return { error: "Unauthorized" };
+  }
+
+  await db.message.delete({
+    where: { id: messageId },
+  });
+
+  await pusherServer.trigger(groupId, "message-deleted", { messageId });
+
+  return { success: true };
 }

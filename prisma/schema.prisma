@@ -85,6 +85,6 @@ model GroupMembership {
     groupId          String
     joinedAt         DateTime   @default(now())
     habitCompletedAt DateTime[]
-
+    isBanned Boolean @default(false)
     @@unique([userId, groupId])
 }
