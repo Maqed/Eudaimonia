@@ -270,7 +270,9 @@ export async function getDiscoverGroups({
           ? [
               {
                 participants: {
-                  none: { userId: session.user.id, isBanned: true },
+                  none: {
+                    OR: [{ userId: session.user.id }, { isBanned: true }],
+                  },
                 },
               },
             ]
