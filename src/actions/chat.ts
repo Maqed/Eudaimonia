@@ -35,7 +35,7 @@ export async function sendMessage({
   groupId: string;
 }) {
   const { success, session, error } = await _isUserAuthorized(groupId);
-  if (error || !session) return { error };
+  if (error ?? !session) return { error };
 
   if (!content) {
     return { error: "Invalid content" };
@@ -99,7 +99,7 @@ export async function deleteMessage({
   groupId: string;
 }) {
   const { session, error } = await _isUserAuthorized(groupId);
-  if (error || !session) return { error };
+  if (error ?? !session) return { error };
   const message = await db.message.findUnique({
     where: { id: messageId },
     include: { group: true },
