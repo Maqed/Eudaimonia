@@ -3,7 +3,7 @@ import { db } from "@/server/db";
 import { pusherServer } from "@/pusher/server";
 import { getServerAuthSession } from "@/server/auth";
 
-export async function isUserAuthorizedToSendAMessage(groupId: string) {
+async function _isUserAuthorized(groupId: string) {
   const session = await getServerAuthSession();
   if (!session) {
     return { error: "Not authenticated" };
@@ -34,8 +34,7 @@ export async function sendMessage({
   content: string;
   groupId: string;
 }) {
-  const { success, session, error } =
-    await isUserAuthorizedToSendAMessage(groupId);
+  const { success, session, error } = await _isUserAuthorized(groupId);
   if (error || !session) return { error };
 
   if (!content) {
@@ -75,7 +74,7 @@ export async function sendMessage({
 }
 
 export async function getMessages({ groupId }: { groupId: string }) {
-  const { error } = await isUserAuthorizedToSendAMessage(groupId);
+  const { error } = await _isUserAuthorized(groupId);
 
   if (error) return { error };
 
@@ -99,7 +98,7 @@ export async function deleteMessage({
   messageId: string;
   groupId: string;
 }) {
-  const { session, error } = await isUserAuthorizedToSendAMessage(groupId);
+  const { session, error } = await _isUserAuthorized(groupId);
   if (error || !session) return { error };
   const message = await db.message.findUnique({
     where: { id: messageId },
