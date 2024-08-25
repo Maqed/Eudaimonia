@@ -3,8 +3,8 @@ import Image from "next/image";
 
 function Footer() {
   return (
-    <footer className="mt-10 bg-primary py-1 text-primary-foreground">
-      <div className="container flex items-center justify-between">
+    <footer className="mt-5 flex items-center justify-center border-t-2 border-primary py-4">
+      <div className="container flex flex-wrap items-center justify-between">
         <Link href="/">
           <h1 className="text-xl font-bold">Eudaimonia</h1>
         </Link>
@@ -12,7 +12,7 @@ function Footer() {
           Made with 💻 by{" "}
           <Link
             target="_blank"
-            className="inline-flex items-center justify-between gap-1 font-bold"
+            className="inline-flex items-center justify-between gap-1 font-bold text-primary"
             href="https://magedibrahim.vercel.app/"
           >
             <span className="underline">Maged Ibrahim</span>
