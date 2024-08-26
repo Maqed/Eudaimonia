@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { type GroupCardProps } from "@/types/groups";
 
-import { getDailyStreak } from "@/actions/groups";
+import { getDailyStreak } from "@/database/groups";
 
 import {
   Card,

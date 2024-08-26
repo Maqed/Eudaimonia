@@ -6,7 +6,8 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { isToday } from "date-fns";
 
-import { getDailyStreak, completeHabit } from "@/actions/groups";
+import { completeHabit } from "@/actions/groups";
+import { getDailyStreak } from "@/database/groups";
 import { getMessages } from "@/actions/chat";
 
 import CopyToClipboard from "@/components/ui/copy-to-clipboard";

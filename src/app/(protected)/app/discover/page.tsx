@@ -5,7 +5,7 @@ import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
 import { PaginationWithLinks } from "@/components/ui/paginationWithLinks";
 import GroupCard from "@/components/groups/group-card";
-import { getDiscoverGroups } from "@/actions/groups";
+import { getDiscoverGroups } from "@/database/groups";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -28,9 +28,10 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
   }
 
   const discoverCarouselGroups = await getDiscoverGroups({
-    session, take: pageSize,
+    session,
+    take: pageSize,
     skip: pageSize * (page - 1),
-  })
+  });
 
   const totalNumberOfGroups = await db.group.count({
     where: {
@@ -45,14 +46,18 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
     <main className="container mt-10">
       <h1 className="mb-5 text-4xl">Discover Groups</h1>
       <div className="mb-5 flex flex-wrap items-center justify-start gap-3">
-        <Suspense fallback={<>
-          <Skeleton className="w-[400px] h-[228px]" />
-          <Skeleton className="w-[400px] h-[228px]" />
-          <Skeleton className="w-[400px] h-[228px]" />
-          <Skeleton className="w-[400px] h-[228px]" />
-          <Skeleton className="w-[400px] h-[228px]" />
-          <Skeleton className="w-[400px] h-[228px]" />
-        </>}>
+        <Suspense
+          fallback={
+            <>
+              <Skeleton className="h-[228px] w-[400px]" />
+              <Skeleton className="h-[228px] w-[400px]" />
+              <Skeleton className="h-[228px] w-[400px]" />
+              <Skeleton className="h-[228px] w-[400px]" />
+              <Skeleton className="h-[228px] w-[400px]" />
+              <Skeleton className="h-[228px] w-[400px]" />
+            </>
+          }
+        >
           {discoverCarouselGroups.map((group) => {
             return (
               <GroupCard
@@ -64,16 +69,17 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
           })}
         </Suspense>
       </div>
-      <Suspense fallback={
-        <div className="flex justify-center items-center gap-2">
-
-          <Skeleton className="w-10 h-10" />
-          <Skeleton className="w-10 h-10" />
-          <Skeleton className="w-10 h-10" />
-          <Skeleton className="w-10 h-10" />
-          <Skeleton className="w-10 h-10" />
-        </div>
-      }>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center gap-2">
+            <Skeleton className="h-10 w-10" />
+            <Skeleton className="h-10 w-10" />
+            <Skeleton className="h-10 w-10" />
+            <Skeleton className="h-10 w-10" />
+            <Skeleton className="h-10 w-10" />
+          </div>
+        }
+      >
         <PaginationWithLinks
           page={page}
           pageSize={pageSize}

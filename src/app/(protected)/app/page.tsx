@@ -4,7 +4,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
 import { headers } from "next/headers";
-import { getDiscoverGroups, getYourGroups } from "@/actions/groups";
+import { getDiscoverGroups, getYourGroups } from "@/database/groups";
 
 async function AppPage() {
   const headersList = headers();
@@ -17,7 +17,7 @@ async function AppPage() {
 
   const yourGroups = await getYourGroups(session);
 
-  const discoverCarouselGroups = await getDiscoverGroups({ session, take: 4 })
+  const discoverCarouselGroups = await getDiscoverGroups({ session, take: 4 });
 
   return (
     <main className="container pt-10">
