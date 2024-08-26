@@ -374,10 +374,11 @@ export async function getDailyStreak(userId: string, groupId: string) {
     return { success: true, dailyStreak: 1 };
   }
   let streak = 1;
-  for (let i = membership.habitCompletedAt.length - 1; i >= 0; i--) {
+
+  for (let i = membership.habitCompletedAt.length - 1; i >= 1; i--) {
     const diff = differenceInDays(
-      membership.habitCompletedAt[i]?.toLocaleDateString()!,
-      membership.habitCompletedAt[i - 1]?.toLocaleDateString()!,
+      membership.habitCompletedAt[i]?.toLocaleDateString() ?? "",
+      membership.habitCompletedAt[i - 1]?.toLocaleDateString() ?? "",
     ); // Use non-null assertion (!)
     if (diff === 1) {
       streak++;
