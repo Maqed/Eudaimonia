@@ -352,19 +352,23 @@ export async function getDailyStreak(userId: string, groupId: string) {
   }
 
   const lastCompletedDate =
-    membership.habitCompletedAt[membership.habitCompletedAt.length - 1];
+    membership.habitCompletedAt[
+      membership.habitCompletedAt.length - 1
+    ]?.toLocaleDateString();
 
   if (
     !lastCompletedDate ||
     (!isToday(lastCompletedDate) &&
-      differenceInDays(new Date(), lastCompletedDate) !== 1)
+      differenceInDays(new Date().toLocaleDateString(), lastCompletedDate) !==
+        1)
   ) {
     return { success: true, dailyStreak: 0 };
   }
 
   if (
     (isToday(lastCompletedDate) ||
-      differenceInDays(new Date(), lastCompletedDate) === 1) &&
+      differenceInDays(new Date().toLocaleDateString(), lastCompletedDate) ===
+        1) &&
     membership.habitCompletedAt.length === 1
   ) {
     return { success: true, dailyStreak: 1 };
@@ -372,8 +376,8 @@ export async function getDailyStreak(userId: string, groupId: string) {
   let streak = 1;
   for (let i = membership.habitCompletedAt.length - 1; i >= 0; i--) {
     const diff = differenceInDays(
-      membership.habitCompletedAt[i]!,
-      membership.habitCompletedAt[i - 1]!,
+      membership.habitCompletedAt[i]?.toLocaleDateString()!,
+      membership.habitCompletedAt[i - 1]?.toLocaleDateString()!,
     ); // Use non-null assertion (!)
     if (diff === 1) {
       streak++;
