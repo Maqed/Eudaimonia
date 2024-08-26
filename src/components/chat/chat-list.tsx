@@ -70,10 +70,6 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
         messagesContainerRef.current.scrollTop <=
         474
     ) {
-      console.log(
-        messagesContainerRef.current.scrollHeight -
-          messagesContainerRef.current.scrollTop,
-      );
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
@@ -343,7 +339,7 @@ function AdminDropdownMenu({
   userId,
   isOpen,
   onOpenChange,
-  isBanned: isBannedInitialValue,
+  isBanned,
 }: {
   messageId: string;
   handleDeleteMessage: (messageId: string) => Promise<void>;
@@ -354,7 +350,6 @@ function AdminDropdownMenu({
   onOpenChange: (open: boolean) => void;
   isBanned: boolean;
 }) {
-  const [isBanned, setIsBanned] = useState(isBannedInitialValue);
   return (
     <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
@@ -369,7 +364,6 @@ function AdminDropdownMenu({
             userId={userId}
             handleUnBanUser={async (userId) => {
               await handleUnBanUser(userId);
-              setIsBanned(false);
             }}
           />
         ) : (
@@ -377,7 +371,6 @@ function AdminDropdownMenu({
             userId={userId}
             handleBanUser={async (userId) => {
               await handleBanUser(userId);
-              setIsBanned(true);
             }}
           />
         )}

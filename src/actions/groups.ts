@@ -7,6 +7,7 @@ import { type Group, type User, type GroupMembership } from "@prisma/client";
 import { type Session } from "next-auth";
 import { type GroupCardProps } from "@/types/groups";
 import { differenceInDays, isToday } from "date-fns";
+import { pusherServer } from "@/pusher/server";
 
 export async function createGroup(
   values: z.infer<typeof createOrEditGroupSchema>,
@@ -208,6 +209,8 @@ export async function banUser(groupId: string, userId: string) {
     },
   });
 
+  await pusherServer.trigger(groupId, "user-banned", { userId });
+
   return { success: true };
 }
 
@@ -241,6 +244,8 @@ export async function unBanUser(groupId: string, userId: string) {
       isBanned: false,
     },
   });
+
+  await pusherServer.trigger(groupId, "user-unbanned", { userId });
 
   return { success: true };
 }

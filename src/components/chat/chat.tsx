@@ -36,6 +36,28 @@ export function Chat({ messages, selectedUser, groupId }: ChatProps) {
       },
     );
 
+    pusherClient.bind("user-banned", ({ userId }: { userId: string }) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) => {
+          if (msg.userId === userId) {
+            return { ...msg, isBanned: true };
+          }
+          return { ...msg };
+        }),
+      );
+    });
+
+    pusherClient.bind("user-unbanned", ({ userId }: { userId: string }) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) => {
+          if (msg.userId === userId) {
+            return { ...msg, isBanned: false };
+          }
+          return { ...msg };
+        }),
+      );
+    });
+
     return () => {
       pusherClient.unsubscribe(groupId);
     };
