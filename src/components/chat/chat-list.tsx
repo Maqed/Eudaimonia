@@ -63,6 +63,15 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [openMessageId, setOpenMessageId] = useState<string | null>(null);
 
+  // Scroll to the bottom of the chat in initial load
+  React.useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, []);
+
+  // Scroll to the bottom of the chat if the user is not looking at older messages
   React.useEffect(() => {
     if (
       messagesContainerRef.current &&
