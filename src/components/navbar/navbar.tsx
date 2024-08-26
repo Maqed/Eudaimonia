@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 // import { Menu } from "lucide-react";
 import NavbarAuth from "./navbar-auth";
-import ModeToggle from "@/components/ui/mode-toggle";
 // import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 // import {
 //   Sheet,
@@ -21,7 +20,6 @@ export default function Navbar() {
         <h1 className="hidden text-lg font-semibold md:block">Eudaimonia</h1>
       </Link>
       <nav className="flex items-center gap-x-2">
-        <ModeToggle />
         <NavbarAuth />
         {/* Mobile Nav */}
         {/* <Sheet>
