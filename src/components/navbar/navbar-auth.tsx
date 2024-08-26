@@ -20,7 +20,6 @@ function NavbarAuth() {
   if (status === "loading")
     return <Skeleton className="h-10 w-10 rounded-full" />;
 
-  console.log(session?.user.image);
   return session ? (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
