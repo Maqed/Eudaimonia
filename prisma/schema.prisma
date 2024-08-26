@@ -53,6 +53,7 @@ model User {
     groups        GroupMembership[]
     adminGroups   Group[]           @relation("GroupAdmin")
     messages Message[]
+    isBanned Boolean @default(false)
 }
 
 model Message {

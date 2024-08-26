@@ -7,7 +7,7 @@ import {
 import { type Adapter } from "next-auth/adapters";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
-
+import { getUserByID } from "@/database/users";
 import { env } from "@/env";
 import { db } from "@/server/db";
 
@@ -40,7 +40,18 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: "/login",
+    signOut: "/logout",
+  },
   callbacks: {
+    signIn: async ({ user }) => {
+      const existingUser = await getUserByID(user.id);
+
+      if (!existingUser || existingUser.isBanned) return false;
+
+      return true;
+    },
     session: ({ session, user }) => ({
       ...session,
       user: {
