@@ -4,6 +4,7 @@ import Providers from "@/providers";
 import { GeistSans } from "geist/font/sans";
 import { Toaster } from "@/components/ui/toaster";
 import { type Metadata } from "next";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
   title: {
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
     title: "Eudaimonia",
     description:
       "Eudaimonia is a website that helps you improve your life by tracking your habits with your friends",
+    images: [`${env.NEXTAUTH_URL}/logo.png`],
     siteName: "Eudaimonia",
     locale: "es-ES",
     type: "website",
@@ -26,6 +28,7 @@ export const metadata: Metadata = {
     title: "Eudaimonia",
     description:
       "Eudaimonia is a website that helps you improve your life by tracking your habits with your friends",
+    images: [`${env.NEXTAUTH_URL}/logo.png`],
   },
   robots: {
     index: true,
