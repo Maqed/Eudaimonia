@@ -11,6 +11,7 @@ const config = {
     "plugin:@typescript-eslint/stylistic-type-checked",
   ],
   rules: {
+    "@typescript-eslint/prefer-optional-chain": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/array-type": "off",
