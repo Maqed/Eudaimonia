@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
     signIn: async ({ user }) => {
       const existingUser = await getUserByID(user.id);
 
-      if (!existingUser || existingUser.isBanned) return false;
+      if (existingUser && existingUser?.isBanned) return false;
 
       return true;
     },
