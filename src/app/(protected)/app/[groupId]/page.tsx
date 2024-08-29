@@ -20,6 +20,20 @@ import JoinGroupButton from "@/components/groups/join-group-button";
 import { Chat } from "@/components/chat/chat";
 import Leaderboards from "@/components/groups/leaderboards";
 import { checkIfLoggedIn } from "@/lib/server-utils";
+import type { Metadata } from "next";
+type Props = {
+  params: { groupId: string };
+};
+export async function generateMetadata({ params: { groupId } }: Props) {
+  const group = await db.group.findUnique({ where: { id: groupId } });
+  if (!group) {
+    notFound();
+  }
+  return {
+    title: `${group.name}`,
+    description: group.description,
+  } satisfies Metadata;
+}
 
 async function GroupPage({
   params: { groupId },
