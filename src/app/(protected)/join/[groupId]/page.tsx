@@ -27,7 +27,7 @@ async function JoinGroupPage({ params: { groupId } }: Props) {
 
   const result = await joinGroup(groupId);
   if (result.success) {
-    redirect(`/app/${groupId}`);
+    redirect(`/app/${groupId}?refresh=true`);
   }
   return (
     <main className="h-screen-without-navbar flex items-center justify-center">
