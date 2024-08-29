@@ -5,6 +5,7 @@ import { getDiscoverGroups } from "@/database/groups";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { checkIfLoggedIn } from "@/lib/server-utils";
+import CreateAGroupButton from "@/components/groups/create-a-group-button";
 
 const pageSize = 6;
 
@@ -49,15 +50,30 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
             </>
           }
         >
-          {discoverCarouselGroups.map((group) => {
-            return (
-              <GroupCard
-                key={`discover-${group.id}`}
-                group={group}
-                isUserJoined={false}
-              />
-            );
-          })}
+          {discoverCarouselGroups.length > 0 ? (
+            discoverCarouselGroups.map((group) => {
+              return (
+                <GroupCard
+                  key={`discover-${group.id}`}
+                  group={group}
+                  isUserJoined={false}
+                />
+              );
+            })
+          ) : (
+            <>
+              <div className="flex w-full flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
+                <div className="text-center">
+                  <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                    There&apos;s no groups to discover
+                  </h1>
+                  <div className="mt-6">
+                    <CreateAGroupButton />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </Suspense>
       </div>
       <Suspense
