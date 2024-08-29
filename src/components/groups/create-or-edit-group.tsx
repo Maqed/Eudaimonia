@@ -63,7 +63,9 @@ export function CreateOrEditGroup({
           description: `Group has been ${groupId ? "updated" : "created"} successfully!`,
         });
         if (!groupId) form.reset();
-        router.push("/app");
+        if (result.group) {
+          router.push(`/app/${result.group.id}`);
+        }
         router.refresh();
       }
     });
