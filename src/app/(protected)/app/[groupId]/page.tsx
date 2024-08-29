@@ -21,6 +21,8 @@ import { Chat } from "@/components/chat/chat";
 import Leaderboards from "@/components/groups/leaderboards";
 import { checkIfLoggedIn } from "@/lib/server-utils";
 import type { Metadata } from "next";
+import AdBanner from "@/components/ads/ad-banner";
+
 type Props = {
   params: { groupId: string };
 };
@@ -175,6 +177,13 @@ async function GroupPage({
         <div className="col-span-3">
           <h2 className="text-3xl font-bold">Leaderboards</h2>
           <Leaderboards participantsWithStreaks={participantsWithStreaks} />
+        </div>
+        <div className="col-span-3">
+          <AdBanner
+            dataAdFormat="auto"
+            dataAdSlot="2624939235"
+            dataFullWidthResponsive={true}
+          />
         </div>
       </div>
     </main>

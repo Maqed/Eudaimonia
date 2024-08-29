@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { type Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { env } from "@/env";
+import AdSense from "@/components/ads/ad-sense";
 
 export const metadata: Metadata = {
   title: {
@@ -55,6 +56,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <Analytics />
+          <AdSense pId="8463420543075638" />
         </Providers>
       </body>
     </html>
