@@ -1,8 +1,5 @@
 import { db } from "@/server/db";
 import { notFound, redirect } from "next/navigation";
-import { getServerAuthSession } from "@/server/auth";
-import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { isToday } from "date-fns";
 
@@ -22,20 +19,14 @@ import GroupMemberDropdown from "@/components/groups/group-member-dropdown";
 import JoinGroupButton from "@/components/groups/join-group-button";
 import { Chat } from "@/components/chat/chat";
 import Leaderboards from "@/components/groups/leaderboards";
+import { checkIfLoggedIn } from "@/lib/server-utils";
 
 async function GroupPage({
   params: { groupId },
 }: {
   params: { groupId: string };
 }) {
-  const headersList = headers();
-  const header_url = headersList.get("x-pathname");
-  const session = await getServerAuthSession();
-
-  // Check if the session exists
-  if (!session) {
-    redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
-  }
+  const { session } = await checkIfLoggedIn();
 
   const group = await db.group.findUnique({
     where: { id: groupId },

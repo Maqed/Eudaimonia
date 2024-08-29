@@ -1,13 +1,10 @@
 import { db } from "@/server/db";
-import { getServerAuthSession } from "@/server/auth";
-import { redirect } from "next/navigation";
-import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
-import { headers } from "next/headers";
 import { PaginationWithLinks } from "@/components/ui/paginationWithLinks";
 import GroupCard from "@/components/groups/group-card";
 import { getDiscoverGroups } from "@/database/groups";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { checkIfLoggedIn } from "@/lib/server-utils";
 
 const pageSize = 6;
 
@@ -19,13 +16,7 @@ type Props = {
 
 async function DiscoverPage({ searchParams: { page } }: Props) {
   page = Number(page) || 1;
-  const headersList = headers();
-  // read the custom x-url header
-  const header_url = headersList.get("x-pathname");
-  const session = await getServerAuthSession();
-  if (!session) {
-    redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
-  }
+  const { session } = await checkIfLoggedIn();
 
   const discoverCarouselGroups = await getDiscoverGroups({
     session,

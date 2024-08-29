@@ -1,19 +1,10 @@
 import { notFound } from "next/navigation";
-import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import { CreateOrEditGroup } from "@/components/groups/create-or-edit-group";
-import { redirect } from "next/navigation";
-import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
-import { headers } from "next/headers";
+import { checkIfLoggedIn } from "@/lib/server-utils";
 
 async function EditGroupPage({ params }: { params: { groupId: string } }) {
-  const headersList = headers();
-  // read the custom x-url header
-  const header_url = headersList.get("x-pathname");
-  const session = await getServerAuthSession();
-  if (!session) {
-    redirect(`${DEFAULT_UNAUTHENTICATED_REDIRECT}?callbackUrl=${header_url}`);
-  }
+  const { session } = await checkIfLoggedIn();
 
   const group = await db.group.findUnique({
     where: { id: params.groupId },
