@@ -1,7 +1,6 @@
 import { getServerAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import Hero from "./_components/hero";
-import { Features } from "./_components/features";
 import HowItWorks from "./_components/how-it-works";
 import { getDiscoverGroups } from "@/database/groups";
 
@@ -19,7 +18,6 @@ export default async function HomePage() {
     <main>
       <Hero />
       <HowItWorks randomGroup={randomGroup} />
-      <Features />
     </main>
   );
 }
