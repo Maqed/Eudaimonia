@@ -4,6 +4,7 @@ import Providers from "@/providers";
 import { GeistSans } from "geist/font/sans";
 import { Toaster } from "@/components/ui/toaster";
 import { type Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import { env } from "@/env";
 
 export const metadata: Metadata = {
@@ -53,6 +54,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <Toaster />
+          <Analytics />
         </Providers>
       </body>
     </html>
