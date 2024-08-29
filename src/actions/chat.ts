@@ -2,6 +2,7 @@
 import { db } from "@/server/db";
 import { pusherServer } from "@/pusher/server";
 import { getServerAuthSession } from "@/server/auth";
+import { CHAT_MESSAGES_TAKE } from "@/consts/chat";
 
 async function _isUserAuthorized(groupId: string) {
   const session = await getServerAuthSession();
@@ -73,7 +74,15 @@ export async function sendMessage({
   return { success: true, sentMessage };
 }
 
-export async function getMessages({ groupId }: { groupId: string }) {
+export async function getMessages({
+  groupId,
+  take = CHAT_MESSAGES_TAKE,
+  skip = 0,
+}: {
+  groupId: string;
+  take?: number;
+  skip?: number;
+}) {
   const { error } = await _isUserAuthorized(groupId);
 
   if (error) return { error };
@@ -96,14 +105,18 @@ export async function getMessages({ groupId }: { groupId: string }) {
       },
     },
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
+    take,
+    skip,
   });
 
-  const formattedMessages = messages.map((message) => ({
-    ...message,
-    isBanned: message.user.groups[0]?.isBanned ?? false, // Accessing the isBanned status
-  }));
+  const formattedMessages = messages
+    .map((message) => ({
+      ...message,
+      isBanned: message.user.groups[0]?.isBanned ?? false, // Accessing the isBanned status
+    }))
+    .reverse();
   return { success: true, messages: formattedMessages };
 }
 

@@ -26,10 +26,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { deleteMessage } from "@/actions/chat";
+import { deleteMessage, getMessages } from "@/actions/chat";
 import { banUser, unBanUser } from "@/actions/groups";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { CHAT_MESSAGES_TAKE } from "@/consts/chat";
 
 export type MessageType = Message & {
   user: Partial<User>;
@@ -62,6 +63,8 @@ interface ChatListProps {
 export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [openMessageId, setOpenMessageId] = useState<string | null>(null);
+  const [loadedMessages, setLoadedMessages] = useState<MessageType[]>([]);
+  let numberOfSkippingTimes = 1;
 
   // Scroll to the bottom of the chat in initial load
   React.useEffect(() => {
@@ -84,6 +87,91 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
     }
   }, [messages]);
 
+  if (!selectedUser) return <></>;
+
+  const loadMoreMessages = async () => {
+    const { messages: newMessages } = await getMessages({
+      groupId,
+      skip: CHAT_MESSAGES_TAKE * numberOfSkippingTimes,
+    });
+    numberOfSkippingTimes++;
+    if (newMessages) {
+      setLoadedMessages((prev) => [...newMessages, ...prev]);
+    }
+  };
+
+  // Scroll event listener
+  const handleScroll = () => {
+    if (messagesContainerRef.current) {
+      const { scrollTop } = messagesContainerRef.current;
+      if (scrollTop === 0) {
+        loadMoreMessages();
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  return (
+    <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
+      <div
+        ref={messagesContainerRef}
+        className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden"
+      >
+        <AnimatePresence>
+          {loadedMessages.map((message, index) => (
+            <Message
+              groupId={groupId}
+              message={message}
+              index={index}
+              openMessageId={openMessageId}
+              setOpenMessageId={setOpenMessageId}
+              key={`loaded-message-${index}`}
+              selectedUser={selectedUser}
+            />
+          ))}
+          {messages?.map((message, index) => (
+            <Message
+              groupId={groupId}
+              message={message}
+              index={index}
+              openMessageId={openMessageId}
+              setOpenMessageId={setOpenMessageId}
+              key={`message-${index}`}
+              selectedUser={selectedUser}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+      <ChatBottombar groupId={groupId} />
+    </div>
+  );
+}
+function Message({
+  message,
+  selectedUser,
+  groupId,
+  openMessageId,
+  setOpenMessageId,
+  index,
+}: {
+  message: MessageType;
+  selectedUser: selectedUserType;
+  groupId: string;
+  openMessageId: string | null;
+  setOpenMessageId: (openMessageId: string | null) => void;
+  index: number;
+}) {
   const handleDeleteMessage = async (messageId: string) => {
     await deleteMessage({ messageId, groupId });
     setOpenMessageId(null);
@@ -98,88 +186,72 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
     await unBanUser(groupId, userId);
     setOpenMessageId(null);
   };
-
   if (!selectedUser) return <></>;
-
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
-      <div
-        ref={messagesContainerRef}
-        className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden"
-      >
-        <AnimatePresence>
-          {messages?.map((message, index) => (
-            <motion.div
-              key={index}
-              layout
-              initial={{ opacity: 0, scale: 1, y: 50, x: 0 }}
-              animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-              exit={{ opacity: 0, scale: 1, y: 1, x: 0 }}
-              transition={{
-                opacity: { duration: 0.1 },
-                layout: {
-                  type: "spring",
-                  bounce: 0.3,
-                  duration: messages?.indexOf(message) * 0.05 + 0.2,
-                },
-              }}
-              style={{
-                originX: 0.5,
-                originY: 0.5,
-              }}
-              className={cn(
-                "flex gap-2 whitespace-pre-wrap p-4",
-                message.userId === selectedUser.userId
-                  ? "flex-row-reverse"
-                  : "flex-row justify-start",
-              )}
-            >
-              <Avatar className="flex items-center justify-center">
-                <AvatarImage
-                  src={message.user.image ?? ""}
-                  alt={message.user.name ?? ""}
-                  width={6}
-                  height={6}
-                />
-              </Avatar>
-              <span className="max-w-xs rounded-md bg-accent p-3">
-                {message.content}
-              </span>
-              <div className="self-center justify-self-center">
-                {selectedUser.user.id === message.userId && (
-                  <SelectedUserDropdownMenu
-                    messageId={message.id}
-                    handleDeleteMessage={handleDeleteMessage}
-                    isOpen={openMessageId === message.id}
-                    onOpenChange={(open) =>
-                      setOpenMessageId(open ? message.id : null)
-                    }
-                  />
-                )}
-                {selectedUser.group.adminId === selectedUser.user.id &&
-                  message.userId !== selectedUser.user.id && (
-                    <AdminDropdownMenu
-                      messageId={message.id}
-                      userId={message.userId}
-                      handleBanUser={handleBanUser}
-                      handleUnBanUser={handleUnBanUser}
-                      handleDeleteMessage={handleDeleteMessage}
-                      isOpen={openMessageId === message.id}
-                      onOpenChange={(open) =>
-                        setOpenMessageId(open ? message.id : null)
-                      }
-                      isBanned={message.isBanned}
-                    />
-                  )}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 1, y: 50, x: 0 }}
+      animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+      exit={{ opacity: 0, scale: 1, y: 1, x: 0 }}
+      transition={{
+        opacity: { duration: 0.1 },
+        layout: {
+          type: "spring",
+          bounce: 0.3,
+          duration: index * 0.05 + 0.2,
+        },
+      }}
+      style={{
+        originX: 0.5,
+        originY: 0.5,
+      }}
+      className={cn(
+        "flex gap-2 whitespace-pre-wrap p-4",
+        message.userId === selectedUser.userId
+          ? "flex-row-reverse"
+          : "flex-row justify-start",
+      )}
+    >
+      <Avatar className="flex items-center justify-center">
+        <AvatarImage
+          src={message.user.image ?? ""}
+          alt={message.user.name ?? ""}
+          width={6}
+          height={6}
+        />
+      </Avatar>
+      <span className="max-w-xs rounded-md bg-accent p-3">
+        {message.content}
+      </span>
+      <div className="self-center justify-self-center">
+        {selectedUser.user.id === message.userId && (
+          <SelectedUserDropdownMenu
+            messageId={message.id}
+            handleDeleteMessage={handleDeleteMessage}
+            isOpen={openMessageId === message.id}
+            onOpenChange={(open) => setOpenMessageId(open ? message.id : null)}
+          />
+        )}
+        {selectedUser.group.adminId === selectedUser.user.id &&
+          message.userId !== selectedUser.user.id && (
+            <AdminDropdownMenu
+              messageId={message.id}
+              userId={message.userId}
+              handleBanUser={handleBanUser}
+              handleUnBanUser={handleUnBanUser}
+              handleDeleteMessage={handleDeleteMessage}
+              isOpen={openMessageId === message.id}
+              onOpenChange={(open) =>
+                setOpenMessageId(open ? message.id : null)
+              }
+              isBanned={message.isBanned}
+            />
+          )}
       </div>
-      <ChatBottombar groupId={groupId} />
-    </div>
+    </motion.div>
   );
 }
+
 function DeleteMessageDialog({
   messageId,
   handleDeleteMessage,
