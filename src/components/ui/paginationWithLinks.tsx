@@ -119,7 +119,9 @@ export function PaginationWithLinks({
 
     return items;
   };
-
+  if (totalPageCount <= 1) {
+    return null;
+  }
   return (
     <div className="flex w-full flex-col items-center gap-3 md:flex-row">
       <Pagination>
