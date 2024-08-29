@@ -82,7 +82,17 @@ export function ChatList({
         messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
+  React.useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
   if (!selectedUser) return <></>;
 
   const loadMoreMessages = async () => {
@@ -105,18 +115,6 @@ export function ChatList({
       }
     }
   };
-
-  React.useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
 
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden">
