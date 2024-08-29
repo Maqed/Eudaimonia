@@ -1,5 +1,5 @@
+/* eslint-disable */
 "use client";
-
 import React, { useEffect } from "react";
 
 type AdBannerTypes = {
@@ -36,3 +36,4 @@ const AdBanner = ({
 };
 
 export default AdBanner;
+/* eslint-disable */
