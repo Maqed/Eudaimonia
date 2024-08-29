@@ -56,14 +56,19 @@ export type selectedUserType =
 
 interface ChatListProps {
   messages?: MessageType[];
+  setMessages: React.Dispatch<React.SetStateAction<MessageType[]>>;
   selectedUser: selectedUserType;
   groupId: string;
 }
 
-export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
+export function ChatList({
+  messages,
+  setMessages,
+  selectedUser,
+  groupId,
+}: ChatListProps) {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [openMessageId, setOpenMessageId] = useState<string | null>(null);
-  const [loadedMessages, setLoadedMessages] = useState<MessageType[]>([]);
   let numberOfSkippingTimes = 1;
 
   // Scroll to the bottom of the chat in initial load
@@ -96,7 +101,7 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
     });
     numberOfSkippingTimes++;
     if (newMessages) {
-      setLoadedMessages((prev) => [...newMessages, ...prev]);
+      setMessages((prev) => [...newMessages, ...prev]);
     }
   };
 
@@ -129,17 +134,6 @@ export function ChatList({ messages, selectedUser, groupId }: ChatListProps) {
         className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden"
       >
         <AnimatePresence>
-          {loadedMessages.map((message, index) => (
-            <Message
-              groupId={groupId}
-              message={message}
-              index={index}
-              openMessageId={openMessageId}
-              setOpenMessageId={setOpenMessageId}
-              key={`loaded-message-${index}`}
-              selectedUser={selectedUser}
-            />
-          ))}
           {messages?.map((message, index) => (
             <Message
               groupId={groupId}

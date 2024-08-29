@@ -68,6 +68,7 @@ export function Chat({ messages, selectedUser, groupId }: ChatProps) {
       <ChatList
         groupId={groupId}
         messages={messagesState}
+        setMessages={setMessages}
         selectedUser={selectedUser}
       />
     </div>
