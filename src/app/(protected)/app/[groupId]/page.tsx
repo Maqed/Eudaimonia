@@ -84,9 +84,6 @@ async function GroupPage({
   const selectedUserWithGroup = sessionParticipant
     ? {
         ...sessionParticipant,
-        user: {
-          ...session.user,
-        },
         group: {
           id: group.id,
           adminId: group.adminId,

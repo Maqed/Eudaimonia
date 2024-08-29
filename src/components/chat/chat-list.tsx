@@ -36,22 +36,13 @@ export type MessageType = Message & {
   user: Partial<User>;
 } & { isBanned: boolean };
 export type selectedUserType =
-  | {
-      user: {
-        id: string;
-        name: string | null;
-        image: string | null;
-      };
-      id: string;
+  | (Partial<User> & {
       userId: string;
-      groupId: string;
-      joinedAt: Date;
-      habitCompletedAt: Date[];
       group: {
         id: string;
         adminId: string;
       };
-    }
+    })
   | undefined;
 
 interface ChatListProps {
@@ -218,7 +209,7 @@ function Message({
         {message.content}
       </span>
       <div className="self-center justify-self-center">
-        {selectedUser.user.id === message.userId && (
+        {selectedUser.userId === message.userId && (
           <SelectedUserDropdownMenu
             messageId={message.id}
             handleDeleteMessage={handleDeleteMessage}
@@ -226,8 +217,8 @@ function Message({
             onOpenChange={(open) => setOpenMessageId(open ? message.id : null)}
           />
         )}
-        {selectedUser.group.adminId === selectedUser.user.id &&
-          message.userId !== selectedUser.user.id && (
+        {selectedUser.group.adminId === selectedUser.userId &&
+          message.userId !== selectedUser.userId && (
             <AdminDropdownMenu
               messageId={message.id}
               userId={message.userId}
@@ -246,7 +237,7 @@ function Message({
   );
 }
 
-function DeleteMessageDialog({
+function DeleteMessageDropdownItem({
   messageId,
   handleDeleteMessage,
 }: {
@@ -397,7 +388,7 @@ function SelectedUserDropdownMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DeleteMessageDialog
+        <DeleteMessageDropdownItem
           messageId={messageId}
           handleDeleteMessage={handleDeleteMessage}
         />
@@ -447,7 +438,7 @@ function AdminDropdownMenu({
             }}
           />
         )}
-        <DeleteMessageDialog
+        <DeleteMessageDropdownItem
           messageId={messageId}
           handleDeleteMessage={handleDeleteMessage}
         />
