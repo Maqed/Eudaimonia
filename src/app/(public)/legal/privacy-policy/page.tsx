@@ -115,11 +115,11 @@ function PrivacyPolicyPage() {
           <p>
             <strong>Website</strong> refers to Eudaimonia, accessible from{" "}
             <Link
-              href="http://eudaimonia-neon.vercel.app/"
+              href={process.env.NEXTAUTH_URL!}
               rel="external nofollow noopener"
               target="_blank"
             >
-              http://eudaimonia-neon.vercel.app/
+              {process.env.NEXTAUTH_URL}
             </Link>
           </p>
         </li>
