@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { checkIfLoggedIn } from "@/lib/server-utils";
 import CreateAGroupButton from "@/components/groups/create-a-group-button";
+import AdBanner from "@/components/ads/ad-banner";
 
 const pageSize = 6;
 
@@ -93,6 +94,11 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
           totalCount={totalNumberOfGroups}
         />
       </Suspense>
+      <AdBanner
+        dataAdFormat="auto"
+        dataAdSlot="2624939235"
+        dataFullWidthResponsive={true}
+      />
     </main>
   );
 }
