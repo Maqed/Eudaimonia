@@ -21,6 +21,7 @@ import { Chat } from "@/components/chat/chat";
 import Leaderboards from "@/components/groups/leaderboards";
 import { checkIfLoggedIn } from "@/lib/server-utils";
 import type { Metadata } from "next";
+import { env } from "process";
 
 type Props = {
   params: { groupId: string };
@@ -30,9 +31,27 @@ export async function generateMetadata({ params: { groupId } }: Props) {
   if (!group) {
     notFound();
   }
+
+  const title = group.name;
+  const description = group.description ?? "";
+
   return {
-    title: `${group.name}`,
-    description: group.description,
+    title: title,
+    description: description,
+    openGraph: {
+      title,
+      description,
+      images: [`${env.NEXTAUTH_URL}/logo.png`],
+      siteName: "Eudaimonia",
+      locale: "es-ES",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${env.NEXTAUTH_URL}/logo.png`],
+    },
   } satisfies Metadata;
 }
 

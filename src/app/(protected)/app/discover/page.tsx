@@ -6,6 +6,30 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { checkIfLoggedIn } from "@/lib/server-utils";
 import CreateAGroupButton from "@/components/groups/create-a-group-button";
+import { env } from "process";
+import { Metadata } from "next";
+
+const title = "Discover";
+const description = "Discover Public Groups";
+
+export const metadata: Metadata = {
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    images: [`${env.NEXTAUTH_URL}/logo.png`],
+    siteName: "Eudaimonia",
+    locale: "es-ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: [`${env.NEXTAUTH_URL}/logo.png`],
+  },
+};
 
 const pageSize = 6;
 

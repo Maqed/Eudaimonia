@@ -2,6 +2,7 @@ import { db } from "@/server/db";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { env } from "process";
 import { joinGroup } from "@/actions/groups";
 
 type Props = {
@@ -13,9 +14,27 @@ export async function generateMetadata({ params: { groupId } }: Props) {
   if (!group) {
     notFound();
   }
+
+  const title = `Join Group ${group.name}`;
+  const description = group.description ?? "";
+
   return {
-    title: `Join Group ${group.name}`,
-    description: group.description,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [`${env.NEXTAUTH_URL}/logo.png`],
+      siteName: "Eudaimonia",
+      locale: "es-ES",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${env.NEXTAUTH_URL}/logo.png`],
+    },
   } satisfies Metadata;
 }
 
