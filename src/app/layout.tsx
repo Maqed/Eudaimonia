@@ -7,6 +7,7 @@ import { type Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { env } from "@/env";
 import AdSense from "@/components/ads/ad-sense";
+import CookieConsentBanner from "@/components/ads/cookie-consent-banner"; 
 
 export const metadata: Metadata = {
   title: {
@@ -57,6 +58,7 @@ export default function RootLayout({
           <Toaster />
           <Analytics />
           <AdSense pId="8463420543075638" />
+          <CookieConsentBanner />
         </Providers>
       </body>
     </html>
