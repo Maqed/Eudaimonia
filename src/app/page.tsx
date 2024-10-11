@@ -11,7 +11,7 @@ export default async function HomePage() {
     redirect("/app");
   }
 
-  const randomGroups = await getDiscoverGroups({ take: 1, session });
+  const randomGroups = await getDiscoverGroups({ take: 1 });
   const randomGroup = randomGroups[0];
 
   return (

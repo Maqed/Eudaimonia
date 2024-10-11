@@ -6,9 +6,9 @@ import { checkIfLoggedIn } from "@/lib/server-utils";
 async function AppPage() {
   const { session } = await checkIfLoggedIn();
 
-  const yourGroups = await getYourGroups(session);
+  const yourGroups = await getYourGroups();
 
-  const discoverCarouselGroups = await getDiscoverGroups({ session, take: 4 });
+  const discoverCarouselGroups = await getDiscoverGroups({ take: 4 });
 
   return (
     <main className="container pt-10">

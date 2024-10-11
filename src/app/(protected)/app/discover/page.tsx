@@ -44,7 +44,7 @@ async function DiscoverPage({ searchParams: { page } }: Props) {
   const { session } = await checkIfLoggedIn();
 
   const discoverCarouselGroups = await getDiscoverGroups({
-    session,
+
     take: pageSize,
     skip: pageSize * (page - 1),
   });
