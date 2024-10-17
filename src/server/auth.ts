@@ -10,6 +10,7 @@ import Facebook from "next-auth/providers/facebook";
 import { getUserByID } from "@/database/users";
 import { env } from "@/env";
 import { db } from "@/server/db";
+import { GroupMembership } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -23,15 +24,15 @@ declare module "next-auth" {
       id: string;
       name: string;
       image: string;
+      groups: GroupMembership[];
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    groups: GroupMembership[];
+  }
 }
 
 /**
@@ -52,13 +53,17 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const userWithGroups = await getUserByID(user.id);
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          groups: userWithGroups?.groups,
+        },
+      };
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [

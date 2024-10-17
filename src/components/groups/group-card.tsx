@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { type GroupCardProps } from "@/types/groups";
 
-import { getDailyStreak } from "@/database/groups";
+import { getDailyStreak, getHabitCompletedAt } from "@/lib/utils";
 
 import {
   Card,
@@ -78,9 +78,7 @@ async function GroupCard({
       <CardFooter className="flex items-center justify-between">
         {session && (
           <DailyStreak
-            streak={
-              (await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0
-            }
+            streak={getDailyStreak(getHabitCompletedAt(session.user, group.id))}
           />
         )}
         {!isUserJoined && <JoinGroupButton groupId={group.id} />}

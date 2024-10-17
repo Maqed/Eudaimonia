@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { isToday } from "date-fns";
 
 import { completeHabit } from "@/actions/groups";
-import { getDailyStreak } from "@/database/groups";
+import { getHabitCompletedAt } from "@/lib/utils";
+import { getDailyStreak } from "@/lib/utils";
 import { getMessages } from "@/actions/chat";
 
 import CopyToClipboard from "@/components/ui/copy-to-clipboard";
@@ -87,8 +88,7 @@ async function GroupPage({
       .filter((participant) => !participant.isBanned)
       .map(async (participant) => ({
         ...participant,
-        dailyStreak:
-          (await getDailyStreak(participant.userId, group.id)).dailyStreak ?? 0,
+        dailyStreak: getDailyStreak(participant.habitCompletedAt),
       })),
   );
   const { messages } = await getMessages({ groupId });
@@ -121,9 +121,7 @@ async function GroupPage({
         </div>
         <div className="hidden items-center justify-center gap-2 md:flex">
           <DailyStreak
-            streak={
-              (await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0
-            }
+            streak={getDailyStreak(getHabitCompletedAt(session.user, groupId))}
           />
           <CopyToClipboard
             copyMessage="Copy Share Link"
@@ -138,9 +136,7 @@ async function GroupPage({
         <GroupPrivacyBadge isPrivate={group.isPrivate} />
         <ParticipantsBadge count={group.participants.length} />
         <DailyStreak
-          streak={
-            (await getDailyStreak(session.user.id, group.id)).dailyStreak ?? 0
-          }
+          streak={getDailyStreak(getHabitCompletedAt(session.user, group.id))}
         />
         <CopyToClipboard
           copyMessage="Copy Share Link"
