@@ -14,6 +14,7 @@ interface ChatBottombarProps {
 
 export default function ChatBottombar({ groupId }: ChatBottombarProps) {
   const [message, setMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -21,6 +22,8 @@ export default function ChatBottombar({ groupId }: ChatBottombarProps) {
   };
 
   const handleSend = async () => {
+    if (isSending) return;
+    setIsSending(true);
     if (message.trim()) {
       await sendMessageAction({
         content: message,
@@ -33,6 +36,7 @@ export default function ChatBottombar({ groupId }: ChatBottombarProps) {
         inputRef.current.focus();
       }
     }
+    setIsSending(false);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -95,7 +99,7 @@ export default function ChatBottombar({ groupId }: ChatBottombarProps) {
             "shrink-0 dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
           )}
           onClick={handleSend}
-          disabled={!message.trim()}
+          disabled={!message.trim() || isSending}
         >
           <SendHorizontal size={20} className="text-muted-foreground" />
         </Button>
