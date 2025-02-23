@@ -1,8 +1,8 @@
 "use client";
 import { type Message, type User } from "@prisma/client";
-import { cn } from "@/lib/utils";
+import { cn, getFirstLettersOfWords } from "@/lib/utils";
 import React, { useRef, useState } from "react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ChatBottombar from "./chat-bottombar";
 import { AnimatePresence, motion } from "framer-motion";
 import { MoreHorizontal, Trash, Ban } from "lucide-react";
@@ -202,6 +202,9 @@ function Message({
           width={6}
           height={6}
         />
+        <AvatarFallback>
+          {getFirstLettersOfWords(message.user.name)}
+        </AvatarFallback>
       </Avatar>
       <span className="max-w-xs rounded-md bg-accent p-3">
         {message.content}
