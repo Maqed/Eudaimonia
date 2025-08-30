@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 
 function Social() {
   const searchParams = useSearchParams();
-  function handleClick(provider: "google" | "facebook") {
+  function handleClick(provider: "google") {
     return signIn(provider, {
       callbackUrl: searchParams.get("callbackUrl") ?? DEFAULT_LOGIN_REDIRECT,
     });
@@ -25,21 +25,6 @@ function Social() {
         <Image
           src="/OAuthProviders/Google.webp"
           alt={"Google"}
-          width={100}
-          height={100}
-          className="h-5 w-5"
-        />
-      </Button>
-      <Button
-        size="lg"
-        className="flex w-full gap-x-2"
-        variant="outline"
-        onClick={() => handleClick("facebook")}
-      >
-        Continue With Facebook
-        <Image
-          src="/OAuthProviders/Facebook.svg"
-          alt={"Facebook"}
           width={100}
           height={100}
           className="h-5 w-5"
